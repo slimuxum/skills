@@ -1,6 +1,6 @@
 ## What it does
 
-`to-questionnaire` turns a decision you can't settle on your own into a **questionnaire** — a Markdown document you hand to the one person who holds what you're missing, for them to fill in async or for the two of you to work through in a meeting.
+`to-questionnaire` turns a decision you can't settle on your own into a **questionnaire** — a Markdown document you hand to the one person who holds what you're missing, for them to fill in async or for the two of you to work through in a meeting. It captures not only what they know, but what they are authoritative to decide and which sources support consequential answers.
 
 It grills you about the **send**, never the subject. Interviewing you about the topic is pointless here: not knowing the topic is why you're writing to someone else. So it asks the two things you can always answer — who this is going to, and what you need back from them — and aims every question in the document at the **gap** between the two.
 
@@ -23,10 +23,10 @@ The common case is a [grilling](https://www.aihero.dev/ai-coding-dictionary/gril
 
 The interview is two exchanges, and then it stops.
 
-- **Who is it going to?** Their role, their expertise, their relationship to you. This fixes the tone and how much context the document has to carry — an outside client needs orienting, a teammate does not.
+- **Who is it going to?** Their role, expertise, relationship to you, authority and its boundary. This fixes the tone, source weight and how much context the document has to carry — an outside client needs orienting, a teammate does not.
 - **What do you need back?** The concrete decisions or facts you can't resolve alone. This becomes the checklist the finished document is measured against: every item you named gets a question aimed at it.
 
-Everything after that is drafting. The file lands at `to-questionnaire-<slug>.md` in the current directory. There is no setup, no workspace, and nothing to configure.
+Everything after that is drafting. The file lands at a path you name, or at `to-questionnaire-<slug>.md` in the current directory when you do not name one.
 
 ## The document
 
@@ -36,6 +36,8 @@ It is framed as a **discovery questionnaire** — you lack the context, the reci
 - Questions ordered **most-important-first** and grouped under themed headings, because async means you may only get one pass.
 - One idea per question, never compound, with an answer stub beneath it and a *why this matters* line only where a question could be misread.
 - Explicit permission to answer "I don't know" — a flagged uncertainty is useful; a confident guess that reads like a fact is not.
+- A distinction between decision authority, verified fact and interpretation, with governing specifications, procedures, tickets or repository-qualified paths and source revisions where they exist.
+- Repository and Logical Context qualifiers for codebase references; the current directory is never assumed to identify the whole workspace.
 - A closing catch-all: anything we didn't ask that we should know?
 
 Two things it deliberately isn't. It isn't **branching** — the questions are a flat, grouped list, not a tree that skips section D if you answered A. And it isn't **multi-recipient** — one run produces one document for one person.
@@ -52,10 +54,10 @@ No. Step one asks for *the* recipient, singular, and the tone and context of the
 No. The dependent-question design was explored and did not ship. The output is a static document: themed groups, most-important-first, every question live. The objection against it is a fair one — a [model](https://www.aihero.dev/ai-coding-dictionary/model) planning more than two or three questions ahead of a real answer plans badly, and a branching document has to plan all of them ahead of every answer.
 
 **What if the recipient doesn't know either?**
-The document tells them to say so. "I don't know" and partial answers are asked for explicitly, and a flagged uncertainty is worth more than a guess, because a vague answer and a confidently wrong one look identical once they're back in your context.
+The document tells them to say so and to identify the authority who would know. "I don't know" and partial answers are asked for explicitly, and a flagged uncertainty is worth more than a guess, because a vague answer and a confidently wrong one look identical once they're back in your context.
 
 **Does it send it anywhere — Slack, an issue tracker, email?**
-No. It writes a Markdown file in the current directory and tells you the path. Delivery is yours: paste it into a [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket), drop it in a Slack thread, attach it to an email, or open it on a shared screen and work through it live. People have wired up all four by hand.
+No. It writes one Markdown file to the authorised path and tells you where it is. Delivery is yours: paste it into a [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket), drop it in a Slack thread, attach it to an email, or open it on a shared screen and work through it live. People have wired up all four by hand.
 
 **Isn't this just `/grill-me` in batch mode?**
 No, and the distinction is worth holding. `grill-me` already asks in **rounds** — the whole frontier at once, then recomputed from your answers — so the "give me all the questions at once" need is met there. `to-questionnaire` is about a different axis: not how the questions are delivered, but whose head the answers are in. Answering them yourself faster is `grill-me`; getting them out of someone else is this.
@@ -70,6 +72,7 @@ Yes, and plenty of people did before it existed — `OPEN_QUESTIONS.md` files, s
 - The questions read as aimed at what the *recipient* knows, not as your own open questions copied down verbatim.
 - You could hand the file to someone who wasn't in the conversation and they would know why they got it and by when to reply.
 - The answers that come back are usable input for a new grilling round, rather than a fresh set of questions.
+- Consequential answers say whether they are authoritative decisions, verified facts or interpretations, and identify their source and revision where available.
 
 ## Where it fits
 

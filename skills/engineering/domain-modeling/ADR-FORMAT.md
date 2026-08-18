@@ -1,8 +1,8 @@
 # ADR Format
 
-ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
+ADRs live in the configured canonical ADR location and follow that repository's naming and numbering convention.
 
-Create the `docs/adr/` directory lazily — only when the first ADR is needed.
+If no ADR convention exists, propose the target repository, path, naming scheme, and numbering scheme, then obtain approval before creating anything. Do not default to `docs/adr/` or duplicate a mutable ADR across repositories.
 
 ## Template
 
@@ -24,7 +24,7 @@ Only include these when they add genuine value. Most ADRs won't need them.
 
 ## Numbering
 
-Scan `docs/adr/` for the highest existing number and increment by one.
+Follow the configured canonical location's existing convention. If it uses sequential numbers, scan that location for the highest existing number and increment it. If no convention exists, include the proposed number in the write approval.
 
 ## When to offer an ADR
 
@@ -38,10 +38,10 @@ If a decision is easy to reverse, skip it — you'll just reverse it. If it's no
 
 ### What qualifies
 
-- **Architectural shape.** "We're using a monorepo." "The write model is event-sourced, the read model is projected into Postgres."
-- **Integration patterns between contexts.** "Ordering and Billing communicate via domain events, not synchronous HTTP."
-- **Technology choices that carry lock-in.** Database, message bus, auth provider, deployment target. Not every library — just the ones that would take a quarter to swap out.
-- **Boundary and scope decisions.** "Customer data is owned by the Customer context; other contexts reference it by ID only." The explicit no-s are as valuable as the yes-s.
-- **Deliberate deviations from the obvious path.** "We're using manual SQL instead of an ORM because X." Anything where a reasonable reader would assume the opposite. These stop the next engineer from "fixing" something that was deliberate.
-- **Constraints not visible in the code.** "We can't use AWS because of compliance requirements." "Response times must be under 200ms because of the partner API contract."
-- **Rejected alternatives when the rejection is non-obvious.** If you considered GraphQL and picked REST for subtle reasons, record it — otherwise someone will suggest GraphQL again in six months.
+- **Architectural shape.** "The safety monitor is isolated from the application partition." "The interface model is owned in a separate repository and generated into each consumer."
+- **Integration patterns between contexts.** "The body-control and diagnostics contexts exchange versioned signals through the platform interface, not direct internal calls."
+- **Technology choices that carry lock-in.** MCU family, RTOS, communication stack, serialization format, persistent storage, toolchain, or deployment target. Not every library — only choices that are expensive to replace.
+- **Boundary and scope decisions.** "Signal validity is owned by the interface context; each consumer owns its fallback behavior." The explicit no-s are as valuable as the yes-s.
+- **Deliberate deviations from the obvious path.** "This value is copied at the boundary to preserve timing isolation." Anything where a reasonable reader would assume the opposite. These stop the next engineer from "fixing" something that was deliberate.
+- **Constraints not visible in the code.** "This path must complete within the allocated execution budget." "Dynamic allocation is unavailable after initialization on this target."
+- **Rejected alternatives when the rejection is non-obvious.** Record why a plausible bus, scheduling, partitioning, or representation alternative was rejected so the same trade-off is not reopened without new evidence.

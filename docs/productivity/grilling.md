@@ -13,7 +13,7 @@ Typing `/grilling` directly gets you the plain interview and nothing else. Where
 | What you have | Reach for |
 | --- | --- |
 | You aren't working in a working directory | [grill-me](https://aihero.dev/skills-grill-me) — the same [session](https://www.aihero.dev/ai-coding-dictionary/session), under a name the agent will never fire by itself |
-| You are in a working directory | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) — the same session, and it writes `CONTEXT.md` and ADRs as it goes |
+| You have a workspace to align against | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) — the same session, and it updates the active Logical Context artifacts and ADRs as it goes |
 | An effort too big to hold in one session | [wayfinder](https://aihero.dev/skills-wayfinder) — it charts a map and runs grilling inside the decision tickets |
 | A question that talking cannot settle — how something should look or feel | [prototype](https://aihero.dev/skills-prototype) — build the throwaway version, then come back |
 | A skill of your own that needs an interview | Invoke `/grilling` from it, rather than writing another interview |
@@ -26,7 +26,9 @@ The **design tree** is the model of the subject: decisions with decisions hangin
 
 Inside a round every question arrives in a fixed shape: numbered and titled behind a `❓`, then the body, then the agent's recommended answer alone on a `➡️` line. That is what makes a round answerable by number — "1 yes, 2 the second option, 3 no, here's why" — instead of by quoting questions back. The format has one known rough edge: the recommendation sometimes argues *against* the question as it was worded, so agreeing with the recommendation means answering "no" to the question. When that happens, answer the recommendation and say so.
 
-The other half of the design is the split between facts and decisions. Facts are the skill's own job: when a frontier question needs something the [environment](https://www.aihero.dev/ai-coding-dictionary/environment) can settle, it dispatches a [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) to go and find out rather than asking you. It does not block on that — only the questions downstream of a running exploration wait. Decisions are yours, and it must wait for them. An agent running `grilling` that answers its own decisions has broken the skill, not interpreted it liberally. The session ends when the frontier is empty, and it will not act on what you agreed until you confirm you have reached a shared understanding.
+The other half of the design is the split between facts and decisions. Facts are the skill's own job: when a frontier question needs something the [environment](https://www.aihero.dev/ai-coding-dictionary/environment) can settle, it dispatches a [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) with one bounded fact brief, the worker instructions, and a worker marker rather than relying on implicit Skill loading or asking you. A marked fact worker performs only that lookup and cannot dispatch another copy of itself. The interview does not block on that — only the questions downstream of a running exploration wait. If the harness cannot dispatch the required subagent, that fact branch is `BLOCKED`; the agent neither looks it up sequentially nor hands the fact question to you, while independent branches can continue. Decisions are yours, and it must wait for them. An agent running `grilling` that answers its own decisions has broken the skill, not interpreted it liberally. The session ends only when the frontier is empty and no fact branch is running or blocked; it will not act on what you agreed until you confirm you have reached a shared understanding.
+
+For codebase facts, a workspace is not assumed to be one repository. The subagent binds each finding to its repository, path or subtree, and source revision, and uses the active Logical Context rather than whichever directory happens to be current. Conflicting sources come back as a conflict for the user to resolve, not as an agent-selected truth.
 
 The honest limit: the frontier is the agent's judgement, not a computed graph. It can put two questions in one round and only afterwards discover that one answer should have changed the other. There is no guard against that beyond telling it, which reopens the affected branch in the next round.
 
@@ -38,12 +40,12 @@ This page covers the mechanism. The things people most often want are documented
 | --- | --- |
 | The tree, the frontier, rounds, the question format, facts vs decisions | Here |
 | How long a session should run, what to do with a question you can't answer by talking, how to avoid nodding along | [grill-me](https://aihero.dev/skills-grill-me) |
-| What gets written to `CONTEXT.md`, what becomes an ADR | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) |
+| What gets written to the active Logical Context artifacts, what becomes an ADR | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) |
 
 ## Common questions
 
 **Can I go back to one question at a time?**
-Yes, and a large part of the audience does. Add this to your global `CLAUDE.md`:
+Yes, and a large part of the audience does. Add this to your harness-level agent instructions, such as `AGENTS.md` or `CLAUDE.md`:
 
 ```
 When grilling, ask one question at a time.
@@ -79,6 +81,8 @@ A real and unfixed rough edge, reported across [harnesses](https://www.aihero.de
 - Later rounds ask things the first round could not have asked.
 - It goes and looks facts up — reading files, dispatching a sub-agent — rather than asking you something it could have found out.
 - Research running in the background does not stall the round; only the questions that depend on it wait.
+- A missing subagent capability leaves an explicit `BLOCKED` fact branch rather than a sequential substitute.
+- Repository facts identify their repository and source revision instead of relying on the current directory.
 - It stops at the end and asks you to confirm the understanding is shared, instead of starting work.
 - Question count stays high while round count stays low.
 

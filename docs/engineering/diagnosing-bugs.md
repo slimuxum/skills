@@ -1,8 +1,8 @@
 ## What it does
 
-`diagnosing-bugs` runs a six-phase diagnosis on a hard bug or a performance regression: build a repro, minimise it, rank hypotheses, instrument, fix with a regression test, clean up.
+`diagnosing-bugs` runs a six-phase diagnosis on a hard bug or performance regression across static/build, host, simulator, emulator, target, or HIL environments: build a feedback loop, minimise it, rank hypotheses, instrument, fix where authorized, and clean up.
 
-It will not let the agent form a theory until a **tight** feedback loop exists — one named command, already run once, that goes red on *this* bug and green when it is fixed. The default behaviour of a coding agent handed a bug report is to read code and guess; this skill blocks that. If no red-capable command exists, there is no Phase 2. That single gate is what the skill is for. Everything after it — bisection, hypothesis-testing, instrumentation — is mechanical once the signal exists.
+It will not let the agent form a theory until a **tight** feedback loop exists — one named command or bounded target/HIL procedure, already executed in its stated environment, that goes red on *this* bug and green when it is fixed. If no red-capable signal exists, there is no Phase 2. Lower-fidelity evidence cannot be used to claim target-only timing, memory, concurrency, peripheral, or electrical behaviour.
 
 ## When to reach for it
 
@@ -24,18 +24,18 @@ Reach for it on the hard ones: a bug that resists a first look, an intermittent 
 
 Phase 1 gets disproportionate effort because it is the only phase that is hard. The skill gives a ladder of ways to construct the loop, roughly in order of preference:
 
-1. A failing test at whatever seam reaches the bug.
-2. A curl or HTTP script against a running dev server.
-3. A CLI invocation with a fixture input, diffed against a known-good snapshot.
-4. A headless browser script asserting on DOM, console, or network.
-5. A replayed capture — a saved request, payload, or event log, run through the code path in isolation.
-6. A throwaway harness: a minimal subset of the system, one function call.
-7. A property or fuzz loop, for "sometimes wrong output".
-8. A bisection harness you can hand to `git bisect run`.
-9. A differential loop — same input, old version against new.
-10. A [human-in-the-loop](https://www.aihero.dev/ai-coding-dictionary/human-in-the-loop) bash script, last resort. The skill ships `scripts/hitl-loop.template.sh` for this: the agent runs the script, you follow prompts in your terminal, and your answers come back as parseable output.
+1. A static-analysis, compiler, linker, configuration, or interface/ABI signal.
+2. A failing check at a faithful seam on host, simulator, emulator, target, or HIL.
+3. A CLI or protocol invocation with controlled input and a known-good outcome.
+4. A replayed trace, core, log, request, payload, or event capture.
+5. A throwaway C/C++ or service harness around the affected boundary.
+6. A property, fuzz, stress, or race loop for intermittent output, concurrency, memory, or timing failures.
+7. A bisection or differential harness across source revisions, toolchains, configurations, calibration, or datasets.
+8. A bounded target/HIL procedure when hardware, timing, electrical, peripheral, or integration behaviour is load-bearing.
+9. A UI/browser driver only for a genuinely UI-facing symptom.
+10. A [human-in-the-loop](https://www.aihero.dev/ai-coding-dictionary/human-in-the-loop) script or procedure when the interface cannot be automated.
 
-*A* loop is not the goal. **Tight** is: fast (seconds), deterministic (same verdict every run), sharp (asserts your exact symptom, not "didn't crash"), and agent-runnable unattended. A 30-second flaky loop is barely better than none. For a bug that only shows up sometimes, the target is not a clean repro but a **higher reproduction rate** — loop the trigger, parallelise, add stress, inject sleeps, until the flake rate is high enough to debug against.
+*A* loop is not the goal. **Tight** means the fastest faithful, deterministic, sharp, repeatable signal available. Seconds are ideal, but a target or HIL procedure taking minutes is valid when cheaper environments cannot reproduce the property. For an intermittent bug, raise and pin the reproduction rate until the signal is useful.
 
 When it genuinely cannot build one, it is instructed to stop and say so, list what it tried, and ask you for [environment](https://www.aihero.dev/ai-coding-dictionary/environment) access, a captured artifact, or permission to add temporary instrumentation. It should not proceed to hypothesise anyway.
 
@@ -45,13 +45,13 @@ The phases are gates, not a checklist. Each one refuses to open until something 
 
 | Gate | What has to be true |
 | --- | --- |
-| Into Phase 2 | A named command, already run and pasted with its output, that can go red on this bug |
+| Into Phase 2 | A named command or bounded procedure, already executed with redacted evidence, that can go red on this bug and records repositories, revisions, toolchain/configuration, and environment identity |
 | Into Phase 3 | The repro is reproduced *and* minimised — every remaining element is load-bearing |
 | Into Phase 4 | 3–5 ranked, falsifiable hypotheses exist, each stating its prediction, shown to you before any is tested |
 | Into Phase 5 | Probes map to a specific prediction, one variable at a time, every debug log tagged `[DEBUG-a4f2]`-style so cleanup is one grep |
-| Done | Original repro no longer reproduces, instrumentation gone, and the hypothesis that turned out correct is written into the commit message |
+| Done | Original repro is green, instrumentation is gone, every check names its environment and limitations, and the correct hypothesis and evidence are recorded in the commit or PR message |
 
-Phase 5 has an escape hatch worth knowing about. The regression test is written before the fix, but only if a **correct seam** exists for it — one where the test exercises the real bug pattern as it occurs at the call site. Where the only available seam is too shallow, the skill is told to say so rather than write a test that gives false confidence. That absence is itself the finding, and it is what routes the post-mortem to `improve-codebase-architecture`.
+Phase 5 has one escape hatch worth knowing about. A regression check is written before the fix only if a **correct, faithful seam and environment** exist. Where the only available check is too shallow, the skill records a command or procedure as evidence rather than manufacturing confidence.
 
 ## Common questions
 
@@ -61,14 +61,14 @@ This is the most-reported problem with the skill, and it is real. On GPT-5.6-Sol
 **Can I point it at a codebase and ask where the performance problems are?**
 No. It diagnoses one failure you can already name. Its performance branch is for a regression with a symptom — establish a baseline measurement, then bisect, measure first and fix second — not for a proactive sweep. A skill for the proactive version was [proposed and closed](https://github.com/mattpocock/skills/issues/431); there is currently no skill for it.
 
-**Does it stop and ask me before it writes the fix?**
-No. Only Phase 3 has a human checkpoint — the ranked hypothesis list is shown to you before any is tested, and it proceeds on its own ranking if you are away. There is no gate between instrumentation and the fix, so the agent can start writing code before you have agreed with its root cause. [Issue #124](https://github.com/mattpocock/skills/issues/124) asks for that gate and is still open. If you want it, say so when you invoke the skill.
+**Does it stop before it writes the fix?**
+No. Only Phase 3 has a human checkpoint: the ranked hypotheses are shown before testing, and the skill proceeds on its own ranking if you are away. Once the cause is proven, it writes the regression check and fix. Target/HIL actions that can alter hardware, calibration, shared equipment, or deployed state still require explicit authorization and recovery steps.
 
 **I already ran `/triage` on this bug report. Is this the same work again?**
 Partly, and neither skill admits it. As one reader put it: "Triage's step 3 is essentially a shallow, bounded instance of diagnosing-bugs Phase 1–2, but neither file mentions the other." Triage does a bounded "is this actually a bug, and what is the surface" pass; this skill does the thorough version. Running triage first is not wasted — its verification often gives you most of Phase 1's raw material — but expect to redo it properly here, and expect no cross-reference to tell you that.
 
 **Will the repro output it pastes leak secrets?**
-It might. The skill asks the agent to paste the invocation and its output, and to request artifacts like HAR files, log dumps, and core dumps. None of those are sanitised by instruction. [Issue #674](https://github.com/mattpocock/skills/issues/674) raises exactly this — credentials, tokens, cookies, and personal data riding along into a chat, an issue, or a PR — and proposes a redaction guardrail. It is open and unimplemented. Treat redaction as your job for now, particularly before the output goes anywhere public.
+It must redact them first. Commands should consume credentials through environment variables; quoted artifacts include only signal-bearing lines, with credentials, tokens, cookies, and personal data replaced by `<REDACTED>`. If the redacted artifact is insufficient, the agent asks rather than exposing the secret.
 
 **My security scanner flagged this skill as high risk.**
 Snyk flags it, and the flag is a false positive. It is the only skill in the set that ships an executable shell script (`hitl-loop.template.sh`) alongside instructions to run it and to curl a dev server. Shipped `.sh` plus run-it instructions plus outbound HTTP is enough to trip a static scanner. The script itself is about 30 lines of `read -r -p` prompts that pause for human input. The scanner is rating the capability surface, not a proven exploit.
@@ -78,13 +78,15 @@ Renamed to `/diagnosing-bugs` in v1.0.0. The old name no longer exists. Anything
 
 ## It's working if
 
-- It shows you a command and its red output before it offers a single theory. If theory arrives first, the skill is not running.
+- It shows a command or bounded procedure, environment, source revisions, and redacted red evidence before it offers a theory.
 - The failure it reproduces is the one you reported, not a nearby one it found on the way.
 - It shrinks the repro before it starts guessing, and can tell you why each remaining piece is load-bearing.
 - You are shown a ranked list of 3–5 hypotheses, each with a prediction you could falsify, before any of them is tested.
 - Every debug log it adds carries a tag like `[DEBUG-a4f2]`, and a grep for that tag comes back empty when it declares done.
-- The commit or PR message names which hypothesis was right.
-- When it cannot lock the bug down with a test, it says so plainly instead of writing a shallow one.
+- The commit or PR message records which hypothesis was right and the evidence that distinguished it.
+- When it cannot lock the bug down with a faithful automated check, it says so and preserves an exact procedure instead of writing a shallow test.
+- Target instrumentation and equipment actions have explicit authorization, impact analysis, stop conditions, and recovery.
+- Every check states what ran, its result, environment, and limitation; agreed checks that did not run remain explicit.
 
 ## Where it fits
 

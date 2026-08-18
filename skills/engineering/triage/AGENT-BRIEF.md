@@ -29,12 +29,16 @@ Describe **what** the system should do, not **how** to implement it. The agent w
 
 The agent needs to know when it's done. Every agent brief must have concrete, testable acceptance criteria. Each criterion should be independently verifiable.
 
-- **Good:** "Running `gh issue list --label needs-triage` returns issues that have been through initial classification"
+- **Good:** "Running `gh issue list --repo <owner/repo> --label needs-triage` returns issues that have been through initial classification"
 - **Bad:** "Triage should work correctly"
 
 ### Explicit scope boundaries
 
 State what is out of scope. This prevents the agent from gold-plating or making assumptions about adjacent features.
+
+### Workspace and evidence
+
+For work spanning a workspace, identify each repository and baseline revision, the active Logical Context, and owned interfaces. State which static, host, simulator, emulator, target, or HIL evidence is required and what each environment cannot prove. Tracker readiness does not mean the product is verified or complete.
 
 ## Template
 
@@ -43,6 +47,12 @@ State what is out of scope. This prevents the agent from gold-plating or making 
 
 **Category:** bug / enhancement
 **Summary:** one-line description of what needs to happen
+
+**Workspace baseline:**
+- `<repository>` at `<revision>` — in-scope subtree and role
+
+**Logical context and source authority:**
+Name the context, governing sources, and how conflicts should be surfaced.
 
 **Current behavior:**
 Describe what happens now. For bugs, this is the broken behavior.
@@ -61,6 +71,9 @@ Be specific about edge cases and error conditions.
 - [ ] Specific, testable criterion 1
 - [ ] Specific, testable criterion 2
 - [ ] Specific, testable criterion 3
+
+**Verification and evidence:**
+- Environment, command or procedure, expected evidence, and limitation
 
 **Out of scope:**
 - Thing that should NOT be changed or addressed in this issue

@@ -1,6 +1,6 @@
 ## What it does
 
-`codebase-design` fixes the words you use to design a module: **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**. It defines each one precisely, bans the loose substitutes ("component", "service", "API", "boundary"), and states the handful of principles that follow from them.
+`codebase-design` fixes the words you use to design a module or cross-repository interface: **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**. It makes source, binary, timing, resource, concurrency, lifecycle, failure and hardware constraints part of the interface rather than implementation trivia.
 
 It is a reference, not a process. There is no loop to run, no artifact it produces, no checkpoint where it asks you a question. Every other skill that touches design borrows its vocabulary; on its own it gives you the language and stops. That is the thing to know before you invoke it, because a skill with no process and no stopping rule will improvise one if you point a [session](https://www.aihero.dev/ai-coding-dictionary/session) at it and say "go" — see the questions below.
 
@@ -8,7 +8,7 @@ It is a reference, not a process. There is no loop to run, no artifact it produc
 
 Type `/codebase-design`, or the agent reaches for it automatically when a design task fits.
 
-Reach for it when you already know which code you're redesigning and you need to think about its shape: where the seam goes, how small the interface can get, whether an extraction is earning its keep. It is also what you reach for to settle an argument about what a word means.
+Reach for it when you already know which code or logical context you are redesigning and need to reason about shape, ownership, compatibility, verification, or a seam spanning repositories.
 
 Several skills sit close to it. Which one you want depends on what the actual problem is:
 
@@ -26,11 +26,11 @@ The glossary is the skill. Every term is defined against the others, and each on
 
 | Term | What it means | Don't say |
 |---|---|---|
-| **Module** | Anything with an interface and an implementation. Deliberately scale-agnostic — a function, a class, a package, a slice spanning tiers. | unit, component, service |
-| **Interface** | Everything a caller must know to use it correctly: the type signature, plus invariants, ordering constraints, error modes, required config, performance characteristics. | API, signature |
+| **Module** | Anything with an interface and an implementation: a function, C/C++ library, process, firmware partition, package, or cross-repository slice. | unit, component, service |
+| **Interface** | Everything a caller, integrator or verifier must know: source/binary contracts, invariants, ownership, ordering, concurrency, timing, resources, lifecycle, error modes, config and hardware assumptions. | API, signature |
 | **Depth** | Leverage at the interface — how much behaviour a caller or a test can exercise per unit of interface they have to learn. **Deep**: a lot of behaviour behind a small interface. **Shallow**: the interface is nearly as complex as the implementation. | — |
 | **Seam** | Michael Feathers' term: a place you can alter behaviour without editing in that place. It is the *location* of an interface, and where to put it is its own decision, separate from what goes behind it. | boundary |
-| **Adapter** | A concrete thing satisfying an interface at a seam. Names a role, not a substance — an in-memory fake and a Postgres repo are both adapters. | — |
+| **Adapter** | A concrete thing satisfying an interface at a seam. Names a role, not a substance — an in-memory fake and a flash-backed calibration store are both adapters. | — |
 | **Leverage** | What callers get from depth: more capability per unit of interface learned. | — |
 | **Locality** | What maintainers get from depth: change, bugs and verification concentrate in one place. Fix once, fixed everywhere. | — |
 
@@ -40,16 +40,16 @@ Depth is deliberately *not* defined as the ratio of implementation lines to inte
 
 - **Depth is a property of the interface, not the implementation.** A deep module can be built internally from small swappable parts. They just don't surface to callers. A module can have internal seams its own tests use, and one external seam at its interface.
 - **The deletion test.** Imagine deleting the module. If complexity vanishes, it was a pass-through. If it reappears across N callers, it was earning its keep.
-- **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is the wrong shape.
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't cut a seam until something actually varies across it. A single-adapter seam is just indirection.
+- **The interface is the verification surface.** Verify each risk in the cheapest faithful static, host, simulator, emulator, target or HIL environment; one environment need not prove every property.
+- **A seam needs real variation or control.** Multiple adapters are strong evidence, but platform ownership, ABI, fault containment, hardware isolation or independent verification can also justify it.
 
-Two supporting files go further, and the skill reads them on demand rather than up front. [DEEPENING.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md) classifies a candidate's dependencies — in-process, local-substitutable, remote-but-owned, true-external — because the category decides how the deepened module gets tested across its seam. [DESIGN-IT-TWICE.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md) spins up parallel [sub-agents](https://www.aihero.dev/ai-coding-dictionary/subagent) to produce three or more radically different interfaces for the same module, then compares them on depth, locality and seam placement.
+Two supporting files go further. [DEEPENING.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md) classifies in-process, platform-substitutable, cross-process/repository-owned, and external/hardware-controlled dependencies, then maps their remaining risks to verification environments. [DESIGN-IT-TWICE.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md) freezes three or more design constraints, then requires one isolated parallel [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) per constraint. If the harness cannot provide the full selected count concurrently, it reports `BLOCKED`; the parent agent never reduces the set or generates the alternatives sequentially.
 
 ## Common questions
 
-**How do I actually build a deep module in TypeScript?**
+**How do I enforce a deep-module boundary in C, C++, or a mixed codebase?**
 
-This is the most-asked question about the skill and the skill does not answer it. It defines what a deep module *is*; it says nothing about how to stop a stray import from reaching past the interface. [Issue #458](https://github.com/mattpocock/skills/issues/458) put it plainly: "let's say we're happy with the interface, it hides the details, etc. But how do we enforce it? I think without linting or clear guardrails, humans and LLMs alike will start making it messy over time." Matt's answer, in that thread, was three options: wrap it in a class or IIFE and accept that the class gets enormous; make it a package in a monorepo and accept the monorepo tooling; or use a linter like [dependency-cruiser](https://github.com/sverweij/dependency-cruiser) to forbid imports that bypass the interface. He has separately called Effect the best mechanism and dependency-cruiser the second-best. There is a `setup-ts-deep-modules` skill in the repo's `in-progress/` bucket that lays down a `src/packages/<name>/index.ts` convention, but it is a beta-channel skill with no docs page, and it has no lint rule shipped with it.
+Use the mechanisms the actual build owns: a small public-header or generated-interface surface, private headers and sources, component-library boundaries, include visibility, link dependencies, symbol visibility, and dependency checks in CMake, Meson, Bazel, or the project toolchain. Cross-repository seams also need an explicit interface owner, compatibility policy, versioning rule, and integration order. The skill defines the boundary and its invariants; it does not prescribe one folder layout or pretend a naming convention enforces the seam.
 
 **I pointed a session at it and it burned 100k [tokens](https://www.aihero.dev/ai-coding-dictionary/token) redesigning things I never asked about.**
 
@@ -67,9 +67,9 @@ No, and the skill has held that line under repeated pushback. [Issue #95](https:
 
 It does now. For a long time it did not. The inline deep-module notes that used to live inside `tdd` were removed in v1.0 in favour of this shared skill, but the pointer replacing them was never added — so `tdd` defined "seam" for itself and referenced nothing. The gap is closed: the pointer is now in the skill, reached when the shape of the interface is the open question rather than the tests. `tdd` still owns "seam" as the boundary you *test* at; this skill owns the module shape behind it.
 
-**Does the design-it-twice pattern work outside Claude Code?**
+**Does the design-it-twice pattern work without parallel sub-agents?**
 
-Not cleanly. `DESIGN-IT-TWICE.md` says "spawn 3+ sub-agents in parallel using the Agent tool", which is Claude Code's [tool](https://www.aihero.dev/ai-coding-dictionary/tool) by Claude Code's name. The repo ships metadata for other [harnesses](https://www.aihero.dev/ai-coding-dictionary/harness), including Codex, and those may expose nothing under that name — so the parallel-design phase is less portable than the skill's metadata suggests. Tracked in [issue #564](https://github.com/mattpocock/skills/issues/564), open.
+No. Parallel isolation is part of the method, not an optimization. The skill first freezes the actual design set (`N >= 3`), then checks for all `N` concurrent workers before proposing anything. A harness without that capacity receives `BLOCKED`; reducing the set or running the designs serially in the parent would contaminate the alternatives.
 
 **Can I add my own concepts to the glossary — connascence, module secrets, [progressive disclosure](https://www.aihero.dev/ai-coding-dictionary/progressive-disclosure)?**
 
@@ -81,6 +81,8 @@ People have proposed exactly those. [Issue #180](https://github.com/mattpocock/s
 - Someone can point at a proposed extraction and say whether it passes the deletion test, without hedging.
 - A proposed seam comes with a second adapter named, not just the first one.
 - Discussion of an interface covers invariants, ordering and error modes — not only the type signature.
+- A cross-repository interface names its owner, compatibility policy, integration order and source revisions.
+- Verification claims distinguish static, host, simulator, emulator, target and HIL evidence.
 - Invoking it does not start a session. If the agent begins reading files and proposing refactors off the back of `/codebase-design` alone, it has mistaken the reference for a driver.
 
 ## Where it fits

@@ -1,51 +1,32 @@
 # Domain Docs
 
-How the engineering skills should consume this repo's domain documentation when exploring the codebase.
+How the engineering skills should consume the domain documentation this project already uses. Adapt these pointers to the approved repositories and paths; do not use this file to invent a new cross-repository registry.
 
 ## Before exploring, read these
 
-- **`CONTEXT.md`** at the repo root, or
-- **`CONTEXT-MAP.md`** at the repo root if it exists — it points at one `CONTEXT.md` per context. Read each one relevant to the topic.
-- **`docs/adr/`** — read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
+- the project instruction files that apply to the repository and subtree;
+- the existing glossary or context document for the active Logical Context, wherever the project keeps it;
+- existing ADRs, specifications, interface definitions, generated documentation, and platform or verification instructions that govern the work.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.
+If optional domain artifacts do not exist, proceed without manufacturing them. Flag an absence only when it prevents an authoritative interpretation. The `/domain-modeling` skill may propose a canonical location when a term or decision actually needs to be recorded.
 
-## File structure
+## Repository and context rules
 
-Single-context repo (most repos):
-
-```
-/
-├── CONTEXT.md
-├── docs/adr/
-│   ├── 0001-event-sourced-orders.md
-│   └── 0002-postgres-for-write-model.md
-└── src/
-```
-
-Multi-context repo (presence of `CONTEXT-MAP.md` at the root):
-
-```
-/
-├── CONTEXT-MAP.md
-├── docs/adr/                          ← system-wide decisions
-└── src/
-    ├── ordering/
-    │   ├── CONTEXT.md
-    │   └── docs/adr/                  ← context-specific decisions
-    └── billing/
-        ├── CONTEXT.md
-        └── docs/adr/
-```
+- Treat Repository and Logical Context as separate boundaries.
+- A Logical Context may span repositories or select subtrees; one repository may participate in several contexts.
+- Follow existing links and project conventions to the relevant documents. Do not derive locations from `package.json`, a monorepo layout, `src/<context>`, or the current directory.
+- When a feature spans interface, firmware, verification, platform, or calibration repositories, read each repository's applicable documents without copying them into a central summary.
+- Keep mutable terms and decisions in their existing canonical location; use pointers rather than duplicated copies.
+- Qualify cross-repository references by repository and path or subtree.
 
 ## Use the glossary's vocabulary
 
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
+When your output names a domain concept, use the term from the active context's canonical glossary. Do not drift to synonyms it explicitly avoids.
 
-If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling`).
+If the concept is missing, either reconsider language the project does not use or note a real gap for `/domain-modeling`; do not silently add it.
 
 ## Flag ADR conflicts
 
-If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
+If your output contradicts an existing ADR, specification, interface definition, or other governing project source, identify its repository, path, and affected Logical Context rather than silently overriding it:
 
 > _Contradicts ADR-0007 (event-sourced orders) — but worth reopening because…_

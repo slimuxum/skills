@@ -29,6 +29,8 @@ Once you think in these two loads, most authoring decisions — split or don't, 
 - **Leading words** — a compact concept already in the model's pretraining (*tight*, *red*, *tracer bullet*) that the agent thinks with while running the document. It anchors twice: execution in the body, invocation in the pointer.
 - **Pruning** — single source of truth, relevance, and the no-op test applied sentence by sentence, against **duplication**, **sediment** and **sprawl**.
 
+In a multi-repository workspace, a context pointer names the repository, path or subtree and active Logical Context rather than relying on the current directory. Revision-sensitive targets also carry their source revision, so the same pointer resolves to the same evidence in another session or harness.
+
 ## Common questions
 
 **Where did `/writing-great-skills` go?**
@@ -46,8 +48,8 @@ Agents told to "streamline" optimise for length, because length is the thing the
 **How do I know when it's done?**
 When it works, and you can no longer find duplication, sediment or no-ops. There is no automated eval here; the check is a manual run plus the failure-mode vocabulary as a diagnostic. When a document misbehaves, that vocabulary is also the repair kit — name the failure mode first, then fix that.
 
-**Should this live in `CLAUDE.md` or somewhere else?**
-Ask which load you want to pay. `CLAUDE.md` loads into every [session](https://www.aihero.dev/ai-coding-dictionary/session) unconditionally; material behind a pointer costs only the pointer's own line until it fires. Anything that applies in one context out of ten is paying context load the nine other times.
+**Should this live in the agent instructions or somewhere else?**
+Ask which load you want to pay. A repository's `AGENTS.md` or `CLAUDE.md` loads into every [session](https://www.aihero.dev/ai-coding-dictionary/session) in its scope; material behind a pointer costs only the pointer's own line until it fires. In a multi-repository workspace, shared material belongs behind a pointer that names its Logical Context and authoritative location rather than being copied into every repository. Anything that applies in one context out of ten is paying context load the nine other times.
 
 **Do I need to rewrite my documents for each new model?**
 Mostly no, and over-fitting to one model is its own trap. Updating for a new model is usually another no-op pass rather than a rewrite.
@@ -64,7 +66,8 @@ No — finding the word that packs the most behaviour into the fewest [tokens](h
 - You can point at a leading word and watch it doing work in more than one place.
 - Nothing is stated twice, in any form. Duplication is the most reliable sign a document was never tested.
 - Reference that only one branch needs sits behind a pointer rather than in the main file.
+- A revision-sensitive pointer identifies its repository and revision.
 
 ## Where it fits
 
-This is a reach-for-it-anytime standalone reference. It has no neighbour in the chain because it sits underneath the whole set rather than beside any one skill: every skill here was written against it, and the documents the other skills leave behind — a `CONTEXT.md` and its ADRs, a spec, a ticket — are exactly the text it governs once an agent has to read them. When you're unsure which skill or flow fits a task, [ask-matt](https://aihero.dev/skills-ask-matt) routes you over the whole set.
+This is a reach-for-it-anytime standalone reference. It has no neighbour in the chain because it sits underneath the whole set rather than beside any one skill: every skill here was written against it, and the active Logical Context artifacts and ADRs, specs and tickets the other skills leave behind are exactly the text it governs once an agent has to read them. When you're unsure which skill or flow fits a task, [ask-matt](https://aihero.dev/skills-ask-matt) routes you over the whole set.

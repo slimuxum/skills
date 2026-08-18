@@ -1,74 +1,50 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR.
+description: Build and sharpen a workspace's domain model. Use when terminology, logical-context boundaries, a glossary, or an architectural decision must be clarified or recorded.
 ---
 
 # Domain Modeling
 
-Actively build and sharpen the project's domain model as you design. This is the *active* discipline — challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
+Actively sharpen the language and decisions of the logical context in scope. Reading a glossary is ordinary grounding; use this skill when the model itself may change.
 
-## File structure
+A Workspace, Repository, and Logical Context are different boundaries. A context may span repositories, and one repository may contain several contexts. Establish the workspace root, relevant repositories and revisions, target context, source authority, and writable documentation paths before editing.
 
-Most repos have a single context:
+## Find the canonical location
 
-```
-/
-├── CONTEXT.md
-├── docs/
-│   └── adr/
-│       ├── 0001-event-sourced-orders.md
-│       └── 0002-postgres-for-write-model.md
-└── src/
-```
+Read the configured context map, agent guidance, glossaries, ADRs, specifications, generated documentation, and relevant code within scope. Follow existing conventions.
 
-If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The map points to where each one lives:
+If no convention exists, choose one canonical location for the active Logical Context and create files lazily when the first term or decision is resolved. Do not duplicate a mutable glossary or ADR in several repositories; keep one canonical artifact and link to it where practical.
 
-```
-/
-├── CONTEXT-MAP.md
-├── docs/
-│   └── adr/                          ← system-wide decisions
-├── src/
-│   ├── ordering/
-│   │   ├── CONTEXT.md
-│   │   └── docs/adr/                 ← context-specific decisions
-│   └── billing/
-│       ├── CONTEXT.md
-│       └── docs/adr/
-```
+## Work the model
 
-Create files lazily — only when you have something to write. If no `CONTEXT.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
+### Challenge terminology
 
-## During the session
+Call out conflicts with the canonical glossary immediately. Replace vague or overloaded terms with precise candidates, then ask which meaning is intended.
 
-### Challenge against the glossary
+### Test concrete scenarios
 
-When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
+Probe normal, boundary, failure, recovery, concurrency, timing, and resource-limit scenarios when relevant. Keep the language domain-neutral; do not assume a Web request, database transaction, UI, or cloud service.
 
-### Sharpen fuzzy language
+### Cross-check authoritative sources
 
-When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account' — do you mean the Customer or the User? Those are different things."
+Compare statements with the sources that own them: code, interface definitions, specifications, generated artifacts, ADRs, verification evidence, and user decisions. When sources conflict, name each source, repository, revision, and affected context. Do not silently choose a winner.
 
-### Discuss concrete scenarios
+### Update the glossary narrowly
 
-When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
-
-### Cross-reference with code
-
-When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
-
-### Update CONTEXT.md inline
-
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
-
-`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
+When a term is resolved, update the canonical glossary immediately using [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md). Do not batch resolved terms for later. A glossary defines terms and relationships; it is not a specification, implementation plan, issue list, or verification record. Preserve unrelated content and local conventions.
 
 ### Offer ADRs sparingly
 
-Only offer to create an ADR when all three are true:
+Offer an ADR only when all are true:
 
-1. **Hard to reverse** — the cost of changing your mind later is meaningful
-2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
-3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
+1. the decision is costly to reverse;
+2. a future reader would otherwise find it surprising;
+3. real alternatives and trade-offs were considered.
 
-If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+Offer the ADR to the user. When they accept, write it using [ADR-FORMAT.md](./ADR-FORMAT.md), the canonical ADR location, and the repository's numbering convention. Record affected repositories, logical contexts, authoritative inputs, consequences, and unresolved verification.
+
+## Boundaries
+
+Do not edit implementation, tracker state, branches, or commits. Do not widen repository or context scope without approval. Do not claim a verification result that was not run.
+
+Finish with the repositories and revisions inspected, contexts affected, files changed, source conflicts, unresolved terms, and uninspected or `NOT_RUN` scope.

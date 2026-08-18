@@ -1,14 +1,14 @@
 ## What it does
 
-`prototype` writes **throwaway code that answers a question** — does this state model feel right, or what should this screen look like. The question comes first and decides the shape of everything that follows; a prototype that answers the wrong question is pure waste, however good it looks.
+`prototype` writes **throwaway code or a bounded procedure that answers one question**: logic, state, an interface, timing, integration, target behaviour, or UI/HMI. The question and required fidelity decide whether the artifact is a host executable, harness, model, simulator/emulator scenario, target/HIL procedure, or UI variation in the product's real rendering runtime.
 
-Throwaway is a constraint on how the code is *written*, not a promise to destroy it. No tests, no error handling beyond what makes it run, no abstractions, no persistence — because none of that helps you learn the one thing you're trying to learn. What survives is the answer, folded into the real code, and the prototype itself, parked on a branch out of main as the evidence the answer came from.
+Throwaway is a constraint on scope, not an exemption from safety. The prototype carries only the assertions, instrumentation, error handling and recovery needed to answer safely. It never flashes a target or mutates shared data implicitly, and it captures the finished prototype on a throwaway branch rather than main.
 
 ## When to reach for it
 
 Type `/prototype`, or the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) reaches for it automatically when a task fits.
 
-Reach for it the moment you hit a question you can't settle by talking — a state machine whose edge cases you can't hold in your head, a screen you can't picture until you see three versions side by side. [Grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) sessions balloon on exactly these questions: the agent rephrases, you guess, and the scope grows to fill the uncertainty. Stop grilling, build the throwaway version, look at it, then answer in one line. If instead something already built is misbehaving and you want to know why, use [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) — prototyping explores what to build, not why the built thing is broken.
+Reach for it when running a small experiment will settle a question that discussion cannot. Prefer static or host execution; escalate to simulator, emulator, target or HIL only for behaviour cheaper environments cannot preserve. If something already built is broken, use [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs).
 
 You will also arrive here without choosing to. [wayfinder](https://aihero.dev/skills-wayfinder) files `prototype` decision [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) on its map, and working one is this skill.
 
@@ -16,26 +16,28 @@ You will also arrive here without choosing to. [wayfinder](https://aihero.dev/sk
 
 The question picks the branch, and the branches produce very different artifacts:
 
-- **"Does this logic / state model feel right?"** — a **single shareable HTML file**. One self-contained page, no build and no server, that someone opens by double-clicking. It carries a labelled state panel that re-renders after every click, free-play buttons for poking at the model in any order, and tabbed **guided walkthroughs** — one scenario per tab, each with the ordered buttons to press underneath it. Everything is labelled in domain language, so you can hand it to a designer, a PM or a domain expert and let them feel the model themselves. The logic behind the page is a small pure module — a reducer, a machine, a set of functions — kept clean of the DOM so the validated version lifts straight into the real code.
-- **"What should this look like?"** — several **radically different** UI variations on one route, switchable from a floating bottom bar and a `?variant=` URL param. Variants must disagree about structure, not colour; three tweaked card grids is wallpaper, not a prototype. They render inside a real page wherever possible, against real data and real density, because a variant judged in a vacuum always looks fine.
+- **Logic / behaviour / feasibility** — choose the smallest faithful static, host, simulator, emulator, target or HIL artifact. State what it preserves and what it cannot prove. HTML is appropriate only when a human-driven state demo is the actual experiment.
+- **"What should this look like?"** — first identify the UI runtime, display geometry, inputs, existing host, and faithful renderer. Then build several **radically different** variants in Qt/QML, LVGL, a native or instrument HMI, Web, or the actual project environment. Compare them with a development-only selector appropriate to that runtime; a Web route and floating switcher are one option, not the universal shape.
 
-Both keep state in memory, start with no thinking required, and show you the full state after every step. The moment you find yourself hardening one — adding a test, wiring the real database, generalising for a case you might want later — you have stopped prototyping.
+Both start with explicit writable scope, environment, inputs, expected observation, stop conditions and cleanup. Target/HIL work also requires equipment identity, authorization and recovery.
 
-## The prototype is a primary source
+## Capture the answer
 
-A finished prototype leaves two things, and they go to different places.
-
-The **answer** — the verdict plus the question it settled — is captured durably: a commit message, an ADR, the implementation issue. That is what the main branch keeps, folded into the real code.
-
-The **prototype** is the runnable evidence the answer came from, and it is not deleted. It doesn't belong in main either — there is nothing there to maintain and it rots fast — so it is committed to a throwaway `prototype/<name>` branch out of main, never merged, with a [context pointer](https://www.aihero.dev/ai-coding-dictionary/context-pointer) to that branch left on the implementation issue. Main stays clean; the exploration stays findable and re-runnable by whoever picks the work up next.
+A finished prototype reports the question, verdict, command or procedure, environment, inputs, output, source revisions, and limitations, including what ran and what did not. It folds the validated decision into the real code under normal production verification, while keeping the throwaway harness, losing variants, and development selectors on the prototype branch. It then captures the prototype and answer using the skill's throwaway-branch workflow.
 
 ## Common questions
 
-**Wait — isn't the prototype supposed to be deleted?**
-Not any more. It used to be: build it, keep the answer, bin the code. The sharpest objection to that was never about speed — it was *who picks up the work next [session](https://www.aihero.dev/ai-coding-dictionary/session), and what do they have to work from?* A prose summary of a prototype loses the thing that made it convincing. So the prototype is now treated as a [primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source): it lands on a `prototype/<name>` branch out of main and the implementation issue points at it. What changed is where the code lives, not the discipline — it still never merges into main.
+**Does it always keep the prototype on a branch?**
+Yes. The prototype is a primary source for the decision, so the Skill commits it to a throwaway branch outside main and leaves a context pointer on the implementation issue. It never pushes the branch.
 
-**It used to build a terminal app. Where did that go?**
-The logic branch now emits a single shareable HTML file instead. A terminal app can only be driven by someone with the repo cloned and a runtime installed, which rules out exactly the people whose opinion the prototype needs — the designer, the PM, the domain expert who knows what the state model is supposed to mean. One self-contained file that opens by double-click and survives being emailed can be driven by anyone. The pure logic module underneath is unchanged, and is still the part that lifts into the real code.
+**Why didn't it build an HTML demo?**
+HTML is no longer the default for non-UI questions. A C/C++ host harness, simulator scenario, trace replay or controlled target/HIL procedure is usually a more faithful answer to an embedded engineering question.
+
+**How do I compare UI variants if there is no browser or route?**
+Use the runtime's own development seam. Qt/QML can use a launch property, `Loader`, `StackLayout` or debug control; LVGL can use a debug menu, physical-input gesture, build option or simulator target; a native or instrument HMI can use an external harness, replay configuration, diagnostic-only control or separate development images. All variants use the same geometry, inputs and representative states, and the real renderer is exercised before drawing a conclusion.
+
+**Can it flash a target or operate a HIL bench to judge the UI?**
+Only with explicit authorization for the exact target or bench, operation, safe state, stop conditions and recovery. Host or simulator rendering is preferred when it answers the visual question. Target or HIL is reserved for load-bearing properties such as real display integration, physical controls, luminance, timing, memory or startup.
 
 **An agent told me to `/prototype` when I should have been implementing.**
 Known, and it is a naming problem. `prototype` is a generic, appealing word that reads to a flow-unaware agent as "the obvious next step" once tickets exist, so it gets recommended by name even where the design was fully settled in conversation. If you already know what to build, the next step is `/implement`, per ticket. Reach for a prototype only when a specific design question is genuinely unresolved and talking won't resolve it.
@@ -52,11 +54,11 @@ It can be, if you prototype questions you could have answered by talking, or let
 ## It's working if
 
 - You can say in one sentence what question the prototype exists to answer — and it's written at the top of the demo, not just in your head.
-- Someone who doesn't read code can drive the logic demo. They open the file, press the buttons in a walkthrough tab, and describe what they see in their own words.
+- The selected environment is the cheapest one that preserves the property being evaluated, and its limitations are explicit.
 - Someone says "wait, that shouldn't be possible" or "huh, I assumed X". That's a bug in the *idea*, which is the entire point.
-- The UI variants disagree about layout and information hierarchy, not just colour and copy — and the feedback you get is "the header from B with the sidebar from C".
+- The UI/HMI runtime, display and input constraints are explicit; variants disagree about layout and information hierarchy, and are rendered with a faithful renderer under comparable states.
 - It is answered in one sitting. If you're still building it a day later, the question was too big; split it.
-- When it's over, main contains the decision and none of the prototype, and the implementation issue points at the branch that still holds it.
+- No repository, target, lab or tracker state changed beyond the explicitly approved scope.
 
 ## Where it fits
 

@@ -1,75 +1,122 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.
+description: Synthesize a settled engineering conversation or Wayfinder map into a revision-aware specification without interviewing the user again.
 disable-model-invocation: true
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user — just synthesize what you already know.
+# To Spec
 
-The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
+Convert agreed decisions into an implementation-facing engineering specification. Do **not** interview the user again; synthesize what the conversation, map, research, and codebase already establish. The one explicit checkpoint is confirmation of the proposed verification seams. Do not invent missing decisions or implement the change. If another load-bearing decision is absent, list it as open and stop before publication rather than starting a new interview.
 
-## Process
+## Ground the specification
 
-1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
+Read the workspace configuration or establish the same facts inline:
 
-2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
+- workspace root;
+- repositories in scope and each current revision;
+- logical contexts and their repository or subtree membership;
+- authoritative code, specifications, interface definitions, generated artifacts, the active Logical Context's glossary and ADRs, research, and user decisions;
+- applicable verification environments;
+- configured output path or project tracker target.
 
-Check with the user that these seams match their expectations.
+Workspace, Repository, and Logical Context are distinct. Do not assume one repository, one context, Node, Web, a UI, or a cloud service. When an input claim conflicts with an authoritative source, surface the conflict and resolve or list it as an open decision.
 
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+Use the active glossary's domain vocabulary throughout the specification and respect applicable ADRs.
 
-<spec-template>
+If the workspace has not been configured, tell the user to run `setup-matt-pocock-skills`. Do not invoke that user-only skill or create configuration as a side effect.
 
-## Problem Statement
+## Agree the verification seams
 
-The problem that the user is facing, from the user's perspective.
+Sketch the public owned seams at which the change will be tested or otherwise observed. Prefer existing seams to new ones and use the highest seam possible. If a new seam is needed, propose it at the highest stable interface; the fewer seams across the codebase, the better, with one being ideal when it faithfully covers the change.
 
-## Solution
+For automotive software, a seam may be a published source or binary interface, process, repository, protocol, generated interface, simulator/emulator boundary, target diagnostic interface, or HIL observation point. Name the environment and what each seam cannot prove. Do not replace a public seam with an internal implementation detail just because it is easier to test.
 
-The solution to the problem, from the user's perspective.
+Check with the user that these seams match their expectations. Do not write or publish the spec until they confirm them.
 
-## User Stories
+## Define the observable change
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+State the outcome and the smallest end-to-end observation that distinguishes the changed system from the baseline. The observation may be a static-analysis result, host behavior, simulator or emulator behavior, target behavior, HIL evidence, generated artifact, protocol trace, timing measurement, or another source-backed check.
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+Acceptance must be capable of failing at the recorded baseline unless it verifies an invariant that must remain true. A confirmed seam may require more than one environment when no single environment preserves every relevant property.
 
-<user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
-</user-story-example>
+## Write the right kind of requirements
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+Use the structures the engineering problem needs. User stories are optional and belong only where a human workflow benefits from them.
 
-## Implementation Decisions
+Include applicable requirements for:
 
-A list of implementation decisions that were made. This can include:
+- functional behavior, modes, states, transitions, and failure or recovery behavior;
+- interfaces, data formats, units, ranges, timing, ordering, compatibility, and configuration;
+- resource, concurrency, persistence, startup, shutdown, diagnostics, serviceability, safety, or security constraints;
+- generated artifacts, build integration, migration, rollout, and rollback;
+- quality attributes and explicitly excluded behavior.
 
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
+Do not claim compliance, safety integrity, performance, or hardware behavior without an authoritative source and planned evidence.
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+If a prototype produced a small decision-rich snippet that communicates a validated state machine, reducer, schema, interface, or type shape more precisely than prose, inline only that essential snippet and identify its prototype source. Do not paste a working demo.
 
-Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+## Specification format
 
-## Testing Decisions
+Use this structure, omitting sections that are genuinely inapplicable rather than filling them with guesses:
 
-A list of testing decisions that were made. Include:
+```markdown
+## Outcome
 
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+<observable end state and why it matters>
 
-## Out of Scope
+## Provenance and baseline
 
-A description of the things that are out of scope for this spec.
+- Workspace: <root or stable identity>
+- Inputs: <map, decisions, research, or conversation>
+- Prepared against: <date>
+- Source authority: <ordered sources and conflict policy>
 
-## Further Notes
+## Scope
 
-Any further notes about the feature.
+### Logical contexts
+<contexts and boundaries>
 
-</spec-template>
+### Repositories
+| Repository | Baseline revision | In-scope subtrees or artifacts | Change ownership |
+| --- | --- | --- | --- |
+
+### Out of scope
+<explicit exclusions>
+
+## Current behavior and constraints
+
+<source-backed baseline, interfaces, invariants, and limitations>
+
+## Required behavior
+
+<numbered functional and engineering requirements; optional user stories only where useful>
+
+## Interface and state detail
+
+<states, transitions, data, units, ranges, timing, errors, compatibility, or N/A with reason>
+
+## Repository change map
+
+<which outcomes touch which repositories or generated artifacts; no invented file list>
+
+## Verification and evidence
+
+| Requirement | Observable acceptance | Environment | Procedure or command | Expected evidence | Limitation |
+| --- | --- | --- | --- | --- | --- |
+
+## Delivery constraints
+
+<ordering, migration, rollback, tooling, target or lab access, safe-state, and recovery constraints>
+
+## Open decisions and risks
+
+<unknowns, source conflicts, revision drift, and unavailable verification>
+```
+
+Applicable verification environments are static analysis, host, simulator, emulator, target, and HIL. Name the repository, working directory, prerequisites, inputs, expected artifact or observation, and limitations for each planned check. Make anything not executed explicit.
+
+## Publish
+
+After the verification seams are confirmed and the specification is complete, publish it to the configured project tracker or configured spec location. Apply the configured `ready-for-agent` triage label; no additional triage is needed. Do not create branches, commit, push, or edit implementation.
+
+Report the canonical spec location, affected repositories and revisions, unresolved decisions, and verification that has not run.

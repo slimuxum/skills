@@ -29,32 +29,32 @@ _Avoid_: Client, buyer, account
 - **Only include terms specific to this project's context.** General programming concepts (timeouts, error types, utility patterns) don't belong even if the project uses them extensively. Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
 - **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
 
-## Single vs multi-context repos
+## Workspace and context mapping
 
-**Single context (most repos):** One `CONTEXT.md` at the repo root.
+The glossary location is configured, not inferred. A workspace may contain several repositories; a Logical Context may span repositories or select subtrees; one repository may participate in several contexts.
 
-**Multiple contexts:** A `CONTEXT-MAP.md` at the repo root lists the contexts, where they live, and how they relate to each other:
+When a map is needed, list stable repository identifiers, subtree membership, canonical glossary/ADR locations, and relationships explicitly:
 
 ```md
 # Context Map
 
+## Repositories
+
+- `control-fw` — target firmware
+- `shared-if` — owned interface definitions
+- `verification` — host, simulator, and HIL assets
+
 ## Contexts
 
-- [Ordering](./src/ordering/CONTEXT.md) — receives and tracks customer orders
-- [Billing](./src/billing/CONTEXT.md) — generates invoices and processes payments
-- [Fulfillment](./src/fulfillment/CONTEXT.md) — manages warehouse picking and shipping
+### Motion Control
+
+- Members: `control-fw:src/motion`, `shared-if:motion`, `verification:motion`
+- Glossary: `shared-if:docs/contexts/motion.md`
+- ADRs: `shared-if:docs/adr/motion/`
 
 ## Relationships
 
-- **Ordering → Fulfillment**: Ordering emits `OrderPlaced` events; Fulfillment consumes them to start picking
-- **Fulfillment → Billing**: Fulfillment emits `ShipmentDispatched` events; Billing consumes them to generate invoices
-- **Ordering ↔ Billing**: Shared types for `CustomerId` and `Money`
+- **Motion Control → Diagnostics**: publishes bounded status and fault information through the owned interface
 ```
 
-The skill infers which structure applies:
-
-- If `CONTEXT-MAP.md` exists, read it to find contexts
-- If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
-
-When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.
+Use the repository's existing format when one exists. If no map or canonical glossary exists, propose the smallest suitable location and obtain approval before creating it. Never default to a root `CONTEXT.md`, duplicate one glossary across repositories, or infer the active context from the current directory. If membership is unclear, ask.

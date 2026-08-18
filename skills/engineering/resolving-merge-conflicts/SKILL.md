@@ -1,14 +1,18 @@
 ---
 name: resolving-merge-conflicts
-description: "Use when you need to resolve an in-progress git merge/rebase conflict."
+description: "Use when you need to resolve an in-progress merge or rebase by intent across one or more repositories, verify the integration, and finish the operation."
 ---
 
-1. **See the current state** of the merge/rebase. Check git history, and the conflicting files.
+# Resolving Merge Conflicts
 
-2. **Find the primary sources** for each conflict. Understand deeply why each change was made, and what the original intent was. Read the commit messages, check the PRs, check original issues/tickets.
+1. **Map the operations.** For every affected repository, record root, source revision, operation type, current step, conflicts, unrelated local changes, and the user's intended integration result. Do not assume one repository's state describes the whole logical change.
 
-3. **Resolve each hunk.** Preserve both intents where possible. Where incompatible, pick the one matching the merge's stated goal and note the trade-off. Do **not** invent new behaviour. Always resolve; never `--abort`.
+2. **Confirm scope.** Ask before editing when writable scope, generated files, submodules, target configuration, or the intended winner is unclear. Never abort; this Skill resolves and finishes the in-progress operation.
 
-4. Discover the project's **automated checks** and run them — typically typecheck, then tests, then format. Fix anything the merge broke.
+3. **Find primary sources.** Read commits, PRs, issues/specs, interface owners, generated-source inputs, and cross-repository compatibility rules for both sides.
 
-5. **Finish the merge/rebase.** Stage everything and commit. If rebasing, continue the rebase process until all commits are rebased.
+4. **Resolve each hunk by intent.** Preserve both intents where compatible. Where incompatible, follow the confirmed integration goal and record the trade-off. Do not invent new behaviour, rewrite unrelated work, or resolve generated output without checking its source.
+
+5. **Verify the integrated change.** Run the applicable static, host, simulator, emulator, target, and HIL checks for the combined result, not just each side independently. State what ran, the result, its environment, and limitations; keep agreed checks that did not run explicit.
+
+6. **Finish the operation.** Show the resolved scope and evidence, stage the resolved files, and continue the merge or rebase until it completes. Create the merge commit when Git requires it. Never push.

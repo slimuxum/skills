@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.
+description: Build a throwaway prototype to answer one design or feasibility question. Use for logic, state, interfaces, timing, integration, target behaviour, or UI/HMI exploration in Qt/QML, LVGL, native or instrument-cluster runtimes, Web, and other real rendering environments before production implementation.
 ---
 
 # Prototype
@@ -11,16 +11,16 @@ A prototype is **throwaway code that answers a question**. The question decides 
 
 Identify which question is being answered — from the user's prompt, the surrounding code, or by asking if the user is around:
 
-- **"Does this logic / state model feel right?"** → [LOGIC.md](LOGIC.md). Build a single shareable HTML file — free-play buttons plus tabbed guided walkthroughs — that pushes the state machine through cases that are hard to reason about on paper, and that a non-developer can drive.
-- **"What should this look like?"** → [UI.md](UI.md). Generate several radically different UI variations on a single route, switchable via a URL search param and a floating bottom bar.
+- **"Does this logic, state model, interface, timing, or integration approach work?"** → [LOGIC.md](LOGIC.md). Build the smallest artifact that preserves the question: a host executable, test harness, model, simulator/emulator scenario, target/HIL procedure, or a shareable HTML demo when human interaction is the point.
+- **"What should this look like?"** → [UI.md](UI.md). First identify the actual UI runtime, display geometry, input model, and faithful rendering environment. Generate several radically different UI/HMI variations and compare them through an environment-appropriate development selector: for example a QML loader/property, an LVGL debug menu or build option, a native/instrument HMI harness, or a Web route/query selector.
 
-The two branches produce very different artifacts — getting this wrong wastes the whole prototype. If the question is genuinely ambiguous and the user isn't reachable, default to whichever branch better matches the surrounding code (a backend module → logic; a page or component → UI) and state the assumption at the top of the prototype.
+The branches produce different artifacts. Do not turn a non-UI engineering question into a browser demo, or a native HMI question into a Web mockup. If the UI runtime or required fidelity is ambiguous, stop and state what cannot be learned from each available environment before choosing.
 
 ## Rules that apply to both
 
-1. **Throwaway from day one, and clearly marked as such.** Locate the prototype code close to where it will actually be used (next to the module or page it's prototyping for) so context is obvious — but name it so a casual reader can see it's a prototype, not production. For throwaway UI routes, obey whatever routing convention the project already uses; don't invent a new top-level structure.
-2. **Trivial to run.** A UI prototype starts from one command in the project's task runner — `pnpm <name>`, `python <path>`, `bun <path>`, etc. A logic demo is a single HTML file the user double-clicks. Either way, no thinking required to start it.
-3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
-4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast.
-5. **Surface the state.** After every action (logic) or on every variant switch (UI), print or render the full relevant state so the user can see what changed.
-6. **Capture it when done.** Fold any validated decision into the real code, then capture the prototype itself as a **primary source**: commit it to a throwaway branch, out of main, and leave a context pointer to that branch on the implementation issue. Capture the answer too — the verdict and the question it settled — in the issue or a commit. The main branch keeps only the validated decision.
+1. **Scope before writing.** Identify the repository and subtree whose design question the prototype answers. Keep the clearly marked prototype close to that code or UI so its context is obvious. Do not flash, provision, mutate real data, or operate target/HIL equipment without explicit authorization and a recovery path.
+2. **Choose fidelity deliberately.** Prefer static or host execution when it answers the question. For UI/HMI work, use the real renderer or its faithful simulator at the intended resolution and input mode. Use emulator, target, or HIL only for behaviour the cheaper environment cannot preserve, and state the remaining limitations.
+3. **Throwaway from day one.** Mark every artifact and non-production configuration clearly. Do not let prototype shortcuts silently become a production implementation.
+4. **Trivial to run or repeat.** Record one command or bounded procedure, its environment, inputs, expected observation, and cleanup.
+5. **Build only enough evidence.** Add only the assertions, instrumentation, error handling, and safety controls needed to answer the question reliably.
+6. **Capture it when done.** Report the verdict, evidence, environment, source revisions, and limitations. Fold the validated decision into the real code and verify it under normal production constraints; do not carry prototype shortcuts, losing variants, or development selectors into production. Then commit the prototype itself to a throwaway branch outside main and leave a context pointer to that branch on the implementation issue. Capture the question and answer in the issue or commit. Do not push.

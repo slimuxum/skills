@@ -1,6 +1,6 @@
 ## What it does
 
-`handoff` compacts the conversation you are in into a **handoff document** — one markdown file, written to your OS's temporary directory rather than into the workspace, that a fresh [agent](https://www.aihero.dev/ai-coding-dictionary/agent) can read to pick the work up.
+`handoff` compacts the conversation you are in into a **handoff document** — one Markdown file, written to a path you name within the authorised writable scope, or to your OS's temporary directory as a transient default, that a fresh [agent](https://www.aihero.dev/ai-coding-dictionary/agent) can read to pick the work up.
 
 What it buys is **portability**, not compression. That makes the skill narrower than it sounds. You need a file only when the work has to *travel* — to a new [harness](https://www.aihero.dev/ai-coding-dictionary/harness), a new directory, a colleague, or a side task you want to fork off. If nothing is travelling, you do not need a handoff: staying in the [session](https://www.aihero.dev/ai-coding-dictionary/session), `/clear`, a [subagent](https://www.aihero.dev/ai-coding-dictionary/subagent) and `/compact` cover the ordinary end-of-phase case, and `/compact` covers it more often than this skill does.
 
@@ -29,9 +29,9 @@ Three of the five options at a phase boundary preserve different things: `/compa
 
 ## What travels, and what doesn't
 
-The document carries the live thread — what's in flight, why, and what's next — plus a **suggested skills** section naming what the next agent should reach for. Secrets are redacted before it's written.
+The document carries the live thread — what's in flight, why, and what's next — plus a **suggested skills** section naming what the next agent should reach for. For a multi-repository workspace it also carries the active Logical Contexts, each relevant repository or subtree, its source revision and relevant uncommitted state. Existing diff artifacts are referenced; when none exists, the handoff marks the reproducibility limitation instead of presenting `HEAD` as the whole state. Secrets are redacted before it's written.
 
-What it deliberately does not carry is anything already written down. Specs, plans, ADRs, issues, commits and diffs are referenced by path or URL, never copied. That keeps the file small, and it keeps the settled detail in one place instead of two that drift.
+What it deliberately does not carry is anything already written down. Specs, plans, ADRs, issues, commits and diffs are referenced by portable repository identifier and path plus revision, or by URL, never copied. Verified facts, user decisions and unresolved assumptions stay distinct, with the authoritative source named for consequential claims. That keeps the file small, portable across machines, and grounded in one source instead of two copies that drift.
 
 ## Common questions
 
@@ -42,7 +42,7 @@ What it deliberately does not carry is anything already written down. Specs, pla
 Three different things being preserved. `/compact` compresses this context and keeps you going in a fresh window — intent survives. `/clear` empties the window and starts from nothing — correct when everything behind you is disposable, and one-way if it isn't. `/handoff` writes a portable file — the work survives the move to somewhere else. Note that all three turn a **[primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source)** (the conversation as it happened) into a **[secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source)** (a summary of it). Continuing is the only move that doesn't, which is why it's the first one to rule out.
 
 **Where did my handoff file go?**
-The temp directory, which is the most-reported friction with the skill: the paths are long, they differ per OS, and on Windows agents sometimes take several attempts to find the right one. Ask for the path back and keep it before you move on. Temp is deliberate: a handoff is a transit document, not an artifact you maintain. It is not a durable one either — see the next question.
+If you named a destination, it goes there. Otherwise it goes to the OS temp directory and is labelled transient. Ask for the returned path before moving on; temporary paths are transit locations, not durable project artifacts.
 
 **My handoff vanished between sessions.**
 Some environments clear temp between sessions — Codex is the reported case — and `/private/tmp` goes on reboot. If the next session isn't starting within the hour, or is starting under a different harness, copy the file somewhere durable yourself as soon as it's written. The same applies to anything the document *points at*: a dispatch that references other files in temp is a dispatch the next agent can't follow.
@@ -53,11 +53,11 @@ Open the fresh session and point it at the path: read this file, then continue. 
 **Is this the same as `/branch`, `--fork-session`, or the built-in `/handoff`?**
 Analogous, not identical, and `/branch` isn't a shipped skill here — `/handoff` is the canonical name. A fork inherits an exact copy of the context; this skill produces a *targeted* compression aimed at a stated next task, in a file. Where a fork will do — same machine, same harness, same directory — a fork is less work. The file wins the moment the destination is somewhere the fork can't go.
 
-**When does something belong in `CLAUDE.md` instead?**
-Ask whether it's true next month. `CLAUDE.md` is standing context about the project, loaded into every session whether it's relevant or not. A handoff is about one piece of work in flight and is dead once that work lands. Facts that keep getting re-explained are a `CLAUDE.md` problem; a half-finished task is a handoff.
+**When does something belong in the agent instructions instead?**
+Ask whether it's true next month. Repository-level `AGENTS.md` or `CLAUDE.md` is standing context, loaded into every session in its scope whether it's relevant or not. A handoff is about one piece of work in flight and is dead once that work lands. Facts that keep getting re-explained belong in the authoritative agent instructions or context artifact; a half-finished task is a handoff.
 
 **It captures the what, not the why.**
-A fair and repeated criticism. Two things help. Pass the argument — tell it what the next session is for — so the reasoning that bears on *that* is kept rather than flattened. And watch for confident claims the session never actually verified: "X isn't built", "Y is done". The next agent treats the document as a contract and will not re-check it, so a belief written as a fact becomes a false premise for everything that follows. Read the document before you hand it over, and downgrade anything you only assumed.
+A fair and repeated criticism. Two things help. Pass the argument — tell it what the next session is for — so the reasoning that bears on *that* is kept rather than flattened. And watch for confident claims the session never actually verified: "X isn't built", "Y is done". The next agent treats the document as a contract and will not re-check it, so a belief written as a fact becomes a false premise for everything that follows. Read the document before you hand it over, keep facts, decisions and assumptions distinct, and name the authoritative source and revision behind consequential claims.
 
 **Why is it a skill rather than a slash command?**
 Both work; they suit different situations. As a skill it ships and updates through the same install path as everything else here, which is what makes it shareable — the constraint that the agent won't fire it itself is set by its frontmatter rather than by the mechanism.
@@ -70,6 +70,8 @@ Both work; they suit different situations. As a skill it ships and updates throu
 - In the fork case, your original session is still sitting there untouched when you come back to it.
 - The suggested-skills section names the skill you'd have reached for yourself.
 - Nothing in it is a key, a token, or a password.
+- Every repository artifact can be resolved from its repository identifier, path and revision without relying on the originating machine's absolute paths.
+- Creating the handoff does not commit, change an issue or otherwise advance project state.
 
 ## Where it fits
 

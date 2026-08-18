@@ -1,8 +1,8 @@
 ## What it does
 
-`resolving-merge-conflicts` works through an in-progress git merge or rebase, hunk by hunk, then runs the project's own checks and finishes the operation with a commit.
+`resolving-merge-conflicts` works through in-progress merges or rebases by intent across one or more repositories. It maps every operation and unrelated local change, resolves only the confirmed scope, verifies the integrated logical change, then stages and continues until the operation finishes. It never pushes.
 
-It refuses to treat a conflict as a text problem. Before touching a hunk it traces each side back to its **[primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source)** — the commit message, the PR, the original issue — so it is choosing between two intents rather than between two blocks of text, and it preserves both wherever they are compatible. Where they genuinely are not, it picks the side matching the merge's stated goal and names the trade-off. It invents no new behaviour to paper over a clash, and `--abort` is not an option it has: the merge is always carried to a finished commit.
+It refuses to treat a conflict as a text problem. Before touching a hunk it traces each side back to its **[primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source)** — commits, PRs, requirements, interface owners, generated-source inputs, and compatibility rules. It preserves both intents where compatible and names the trade-off where they are not. It never aborts or pushes.
 
 ## When to reach for it
 
@@ -20,7 +20,7 @@ Reach for it when git has already stopped on conflicts it could not resolve itse
 
 The failure mode this exists to kill is resolving by flag: `--ours`, `--theirs`, or hand-deleting whichever block looks less important, so the markers go away and the build compiles. That resolution can be syntactically perfect and still silently drop a change somebody made on purpose.
 
-You cannot preserve an intent you have not read. So the work starts in the history — commits, PRs, [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) — and only then moves to the diff. Another step in the loop exists for the same reason: the skill finds the repo's own [automated checks](https://www.aihero.dev/ai-coding-dictionary/automated-check) and runs them before committing, because a merge is the easiest place in git to produce code that satisfies both branches and passes neither's tests.
+You cannot preserve an intent you have not read. Work starts in every affected repository's history and owned interfaces, then moves to the diff. Verification covers the combined result at the environments relevant to the change — static, host, simulator, emulator, target, or HIL — rather than assuming the checks from each side prove the integration.
 
 ## Common questions
 
@@ -34,18 +34,20 @@ Mostly no. Zoning files off between parallel tasks costs more than it saves, bec
 
 One caveat from a user report on parallel worktrees: when sibling [sessions](https://www.aihero.dev/ai-coding-dictionary/session) each build a ticket in their own tree, the merge back is best done by the session that wrote the change, because it is the one that already knows the intent. Batching everybody's conflicts onto one agent at the end throws away exactly the [context](https://www.aihero.dev/ai-coding-dictionary/context) step 2 of this skill has to go and reconstruct.
 
-**Why never `--abort`?**
+**Will it abort, continue, stage, or commit for me?**
 
-Aborting throws away the resolution work and returns you to the same conflict, unchanged, the next time you try. The skill is written for the case where the merge is going to happen. If you have decided it should not happen, that is a decision to make before invoking, not a branch inside the loop.
+It will not abort. Once the conflicts are resolved and the integrated result is verified, it stages the resolved files and continues the merge or rebase until completion, including the commit Git requires. It never pushes.
 
 ## It's working if
 
 - The agent quotes commit messages, PRs or issues at you while resolving, not just diff hunks.
 - Every hunk ends up with both sides' behaviour, or with an explicit note naming what was dropped and why.
 - Nothing appears in the result that was on neither branch.
-- Typecheck, tests and format were located and run green *before* the commit, not after you noticed something broken.
-- You end on a clean tree with the operation completed — including every remaining commit in a multi-commit rebase.
+- Each relevant interface, generated source, and cross-repository compatibility edge is checked against its owner or primary source.
+- Appropriate static, host, simulator, emulator, target, or HIL evidence states what ran, its result and limitations; unavailable or unrun evidence is not implied green.
+- The resolved scope and verification evidence are shown before staging and continuing.
+- The operation finishes without aborting, and nothing is pushed.
 
 ## Where it fits
 
-A reach-for-it-anytime standalone with no dependencies on any other skill: it starts when git stalls and ends when the tree is clean and committed. Its only real neighbour is [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs), which takes over at the point where a merge resolved cleanly but the merged code misbehaves — a diagnosis problem, not a conflict one. It sits off the main idea-to-ship flow entirely, so [ask-matt](https://aihero.dev/skills-ask-matt) is the map for what runs before and after it.
+A reach-for-it-anytime standalone with no dependencies on another skill: it starts when Git stalls and ends when conflicts are resolved, evidence is reported, and the merge or rebase has been continued until Git finishes it. Its nearest neighbour is [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs), which takes over when an integrated result misbehaves. It sits off the main idea-to-ship flow, so [ask-matt](https://aihero.dev/skills-ask-matt) is the map for what runs before and after it.
