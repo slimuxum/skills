@@ -4,6 +4,9 @@
 
 The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) writes and statically checks the script; it never runs the complete procedure. You do, on an authorized host with the required equipment and access. The first human execution is separate evidence and must not be claimed from static inspection.
 
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
+
 ## When to reach for it
 
 You can type `/wizard`, and the agent can also reach for it on its own. When it hits a step that requires human access, judgment, or physical control, it builds a repeatable gated procedure instead of leaving transient instructions in chat.
@@ -45,7 +48,7 @@ For each captured value, scoping settles where it lands:
 
 ## The template already solves the UX
 
-The [template](https://github.com/mattpocock/skills/blob/main/skills/engineering/wizard/template.sh) ships the core experience: progress, focused instructions, confirmation gates and a closing summary. Its Stripe stage is only a replace-me example and is removed from every generated wizard. For a target or bench procedure, the authored stages identify the equipment and safe state, gate the approved action, then verify the observation or recover. The fixed library retains optional URL, `.env`, and GitHub helpers; use them only for explicitly approved destinations. The `.env` helper needs an approved `ENV_FILE`, and the GitHub helpers are unsuitable when the current repository is ambiguous—use an explicit `--repo` command instead.
+The [template](https://github.com/mattpocock/skills/blob/main/skills/engineering/wizard/template.sh) ships the core experience: progress, focused instructions, confirmation gates and a closing summary. Its Stripe stage is only a replace-me example and is removed from every generated wizard. For a target or bench procedure, the authored stages must identify the equipment and safe state, gate the approved action, and verify the observation. They must stop on a failed post-condition and provide documented recovery. Recovery follows the shared default or your explicit delegation within its authorized scope; the procedure's required action confirmations remain. These checks and gates must be authored for the specific procedure. The fixed library retains optional URL, `.env`, and GitHub helpers; use them only for explicitly approved destinations. The `.env` helper needs an approved `ENV_FILE`, and the GitHub helpers are unsuitable when the current repository is ambiguous—use an explicit `--repo` command instead.
 
 The agent that writes a wizard never runs it end to end. It verifies statically with `bash -n`, `shellcheck` where available, and a trace that every value and observation lands where scoped, every secret stays hidden, every dangerous step has a just-in-time confirmation and recovery path, and every `set_secret` or `set_var` name exactly matches the corresponding CI reference found during scoping. It states which checks ran, their results and limitations. The first human run remains separate evidence.
 
@@ -64,13 +67,13 @@ Not when the credential is entered at runtime. The agent writes the script but d
 
 **Can I go back and fix a value I mistyped?**
 
-Not mid-run. There is no back button—the stages run forward, and a wrong answer means Ctrl-C, return the equipment to its documented safe state when applicable, and re-run. Values deliberately persisted through the optional configuration helpers can be offered as defaults; target, bench and observation values are otherwise entered again. This came up in the launch week and hasn't been closed since: "loved it! One thing though — is there a way to go back and correct what you've entered?"
+Not mid-run. There is no back button—the stages run forward. A wrong answer means stopping the run. Recovery or retry follows the shared default or your explicit delegation within its authorized scope. Equipment procedures retain their documented safe-state instructions, recovery steps, and required action confirmations. Values deliberately persisted through the optional configuration helpers can be offered as defaults; target, bench and observation values are otherwise entered again. This came up in the launch week and hasn't been closed since: "loved it! One thing though — is there a way to go back and correct what you've entered?"
 
 There's a related open bug. Arrow keys in an `ask` prompt insert `^[[D` / `^[[C` instead of moving the cursor, because the prompt uses `read -r` rather than Readline ([issue #741](https://github.com/mattpocock/skills/issues/741)). Backspace works; arrow keys don't. Delete back to the mistake rather than moving the cursor into it.
 
 **What does the default target or bench procedure cover?**
 
-It starts with the approved tool and version, exact target and bench identity, connection/power/interlock checks, and the documented safe state. It then gates the manual command, UI action or physical step, names the expected observation, records what actually happened, and either confirms the post-condition or directs the human to stop and follow the documented recovery path. It does not invent a flashing command, safe state, expected signal or recovery procedure when the authoritative instructions are missing.
+Authored stages must start with the approved tool and version, exact target and bench identity, connection/power/interlock checks, and the documented safe state. They must gate the manual command, UI action or physical step, name the expected observation, and record what actually happened. A failed post-condition must stop the procedure. Its recovery handling follows the shared default or your explicit delegation within its authorized scope, while keeping the procedure's required action confirmations. The agent does not invent a flashing command, safe state, expected signal or recovery procedure when the authoritative instructions are missing.
 
 **Where does it sit in the workflow — after grilling and the spec?**
 
@@ -94,7 +97,7 @@ It did. It's now model-invoked, so the agent reaches for it unprompted when it h
 - Tool, target, bench, safe state, expected observation and recovery are explicit whenever they apply.
 - Optional URLs and credentials appear only when the scoped procedure needs them; secrets are typed blind and approved destinations are named.
 - Each stage fits one screen. Nothing you still need has scrolled away.
-- Ctrl-C has a safe stop path, and a re-run starts from documented prerequisites rather than assuming the previous attempt completed.
+- Ctrl-C has a safe stop path; recovery or a retry follows the shared default or your explicit delegation, keeps the procedure's required action confirmations, and starts from documented prerequisites rather than assuming the previous attempt completed.
 - The final screen lists what it wrote, and separately lists what it couldn't do and you have to finish by hand.
 - Every target, HIL, shared-environment, security-sensitive, or irreversible action has an immediate confirmation, expected post-condition, stop condition, and recovery.
 - The script, repository path, captured observations, and ephemeral-or-repeatable choice are explicit; a repeatable wizard is committed and linked from the README without being pushed.

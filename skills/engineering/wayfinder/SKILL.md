@@ -101,7 +101,7 @@ A prototype or task remains an enabling decision activity, not implementation of
 
 ## Fog and out of scope
 
-Keep in-scope questions that cannot yet be phrased precisely under **Not yet specified**. Resolving a ticket may graduate that fog into new tickets. Work beyond the named destination is **Out of scope**, never fog; if an existing ticket proves to be beyond the destination, close it and add a linked one-line reason under Out of scope rather than treating it as a decision on the route.
+Keep in-scope questions that cannot yet be phrased precisely under **Not yet specified**. Resolving a ticket may graduate that fog into new tickets. Work beyond the named destination is **Out of scope**, never fog. If an existing ticket proves to be beyond the destination, apply the risk and goal confirmation rule: by default, explain the deviation, evidence, and impact, recommend a response, and wait. If the user confirms closure or has explicitly authorized autonomous map maintenance, close it and record a linked one-line reason under Out of scope. This does not authorize implementing work beyond the destination.
 
 ## Invocation
 
@@ -122,10 +122,18 @@ Either way, never hand-resolve more than one ticket per session; the exception i
 2. Use a ticket named by the user, or choose the first open, unblocked, unclaimed frontier ticket. Claim it through the configured tracker before work.
 3. Resolve that one ticket with its type-specific Skill. Fetch the full body of related or closed tickets on demand, and call the Skill tool for every skill named in the map's Notes. If no skill is named and the route is unclear, call the Skill tool twice, for "grilling" and "domain-modeling". Never answer the human's side of a HITL ticket yourself. For verification, use only applicable static, host, simulator, emulator, target, or HIL environments and state the limitations of anything unavailable.
 4. Post the answer as a resolution comment, including evidence links, inspected repository revisions, environment, result, limitations, and follow-on decisions. Close the ticket and append a linked gist to Decisions so far.
-5. Create then wire newly visible tickets, graduate newly precise fog, and remove the graduated text from Not yet specified. If a ticket is beyond the destination, close it and record it under Out of scope. Update or delete tickets invalidated by the decision.
+5. Create then wire newly visible in-scope tickets, graduate newly precise fog, and remove the graduated text from Not yet specified. If a ticket is beyond the destination or a decision invalidates planned work, apply the risk and goal confirmation rule. By default, present the evidence, impact, and recommended ticket or map changes and wait for confirmation. Within explicit autonomous authorization, use the original map-maintenance flow: close beyond-destination tickets and record them under Out of scope, then update or delete tickets invalidated by the decision.
 
 Expect other sessions to edit the tracker concurrently. Never push research branches.
 
 ## Finish
 
 Finish when the destination is clear, all decision tickets are resolved, in-scope fog is empty, revision drift is reconciled, and every decision links its evidence. Hand the map to `to-spec`, `to-tickets`, or the explicitly chosen next step; do not start implementation implicitly.
+
+## Risk and goal confirmation
+
+**Default.** If uncertainty affects an execution decision, a high-risk item appears, or work departs from the user's agreed goal, scope, constraints, or expected outcome, stop execution and pause related delegated work. Explain the problem, evidence, and impact; recommend a response with reasons and wait for the user's explicit confirmation. Before confirmation, do not attempt fixes, retries, workarounds, alternatives, or plan changes on your own. Resume only the confirmed response.
+
+**Explicit autonomous authorization.** If the user explicitly says not to ask and to decide independently, or gives equivalent authorization, follow the skill's original workflow for decisions, iteration, and fallbacks within the task and scope they authorize. This waives only the extra questions and confirmations introduced by this rule and its applications in supporting instructions. It does not expand the agreed goal or scope, remove existing permission limits, or waive confirmations required by the original workflow. Silence, no reply, or an ordinary "continue" is not autonomous authorization. Restore the default when authorization is withdrawn or does not cover the decision.
+
+**Delegation and handoff.** Include this full rule, agreed goal and scope, the user's autonomous authorization and its scope when present, unresolved issues, recommendations, and confirmation status in worker briefs and handoffs. Workers follow the same applicable mode; under the default, they stop and report to the parent for the user's decision. On withdrawal or narrowing of authorization, notify active workers and pause affected work until they are applying the current mode and scope. A handoff or automatic-continuation instruction cannot grant autonomous authorization or bypass a confirmation that is still required.

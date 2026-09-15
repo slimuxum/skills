@@ -4,6 +4,9 @@
 
 It will not let the agent form a theory until a **tight** feedback loop exists — one named command or bounded target/HIL procedure, already executed in its stated environment, that goes red on *this* bug and green when it is fixed. If no red-capable signal exists, there is no Phase 2. Lower-fidelity evidence cannot be used to claim target-only timing, memory, concurrency, peripheral, or electrical behaviour.
 
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
+
 ## When to reach for it
 
 Type `/diagnosing-bugs`, or the agent reaches for it on its own when a task fits — it is model-invoked, and fires on "diagnose" / "debug this" or on a report that something is broken, throwing, failing, or slow.
@@ -18,7 +21,7 @@ Reach for it on the hard ones: a bug that resists a first look, an intermittent 
 | A raw bug report from someone else, not yet confirmed or written up | [triage](https://aihero.dev/skills-triage) first |
 | Throwaway code to answer a design question, not chase a defect | [prototype](https://aihero.dev/skills-prototype) |
 | Building a planned behaviour test-first | [tdd](https://aihero.dev/skills-tdd) |
-| No good seam exists to lock the bug down | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) — this skill hands off there itself |
+| No good seam exists to lock the bug down | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) — the skill recommends a handoff; a changed plan requires confirmation unless your explicit delegation covers it within the authorized task and scope |
 
 ## The tight loop is the skill
 
@@ -62,7 +65,7 @@ This is the most-reported problem with the skill, and it is real. On GPT-5.6-Sol
 No. It diagnoses one failure you can already name. Its performance branch is for a regression with a symptom — establish a baseline measurement, then bisect, measure first and fix second — not for a proactive sweep. A skill for the proactive version was [proposed and closed](https://github.com/mattpocock/skills/issues/431); there is currently no skill for it.
 
 **Does it stop before it writes the fix?**
-No. Only Phase 3 has a human checkpoint: the ranked hypotheses are shown before testing, and the skill proceeds on its own ranking if you are away. Once the cause is proven, it writes the regression check and fix. Target/HIL actions that can alter hardware, calibration, shared equipment, or deployed state still require explicit authorization and recovery steps.
+It can write an authorized regression check and fix once the cause is proven. Phase 3 shows ranked hypotheses before testing. Decision-affecting uncertainty, high risk, or departure from the intended work triggers the shared default pause, even if you are away. Your explicit delegation can permit the original diagnosis, iteration, and fallbacks within its authorized task and scope. Being away does not grant that delegation. Target/HIL actions that can alter hardware, calibration, shared equipment, or deployed state retain their explicit authorization and recovery requirements.
 
 **I already ran `/triage` on this bug report. Is this the same work again?**
 Partly, and neither skill admits it. As one reader put it: "Triage's step 3 is essentially a shallow, bounded instance of diagnosing-bugs Phase 1–2, but neither file mentions the other." Triage does a bounded "is this actually a bug, and what is the surface" pass; this skill does the thorough version. Running triage first is not wasted — its verification often gives you most of Phase 1's raw material — but expect to redo it properly here, and expect no cross-reference to tell you that.
@@ -71,7 +74,7 @@ Partly, and neither skill admits it. As one reader put it: "Triage's step 3 is e
 It must redact them first. Commands should consume credentials through environment variables; quoted artifacts include only signal-bearing lines, with credentials, tokens, cookies, and personal data replaced by `<REDACTED>`. If the redacted artifact is insufficient, the agent asks rather than exposing the secret.
 
 **My security scanner flagged this skill as high risk.**
-Snyk flags it, and the flag is a false positive. It is the only skill in the set that ships an executable shell script (`hitl-loop.template.sh`) alongside instructions to run it and to curl a dev server. Shipped `.sh` plus run-it instructions plus outbound HTTP is enough to trip a static scanner. The script itself is about 30 lines of `read -r -p` prompts that pause for human input. The scanner is rating the capability surface, not a proven exploit.
+A high-risk scanner flag triggers the shared default pause: the agent describes the flagged capability, evidence, and impact, then recommends a response with reasons for your explicit confirmation. If your explicit delegation covers the investigation, the original workflow may assess and address it within that authorization and the skill's existing permission limits. A shell template or outbound HTTP instructions alone does not establish an exploit; any conclusion still needs evidence.
 
 **What happened to `/diagnose`?**
 Renamed to `/diagnosing-bugs` in v1.0.0. The old name no longer exists. Anything of yours that chains `/diagnose` — a wrapper skill, a saved prompt — needs updating.
@@ -92,4 +95,4 @@ Renamed to `/diagnosing-bugs` in v1.0.0. The old name no longer exists. Anything
 
 `diagnosing-bugs` is a reach-for-it-anytime standalone. You drop into it when something is broken and drop out when the fix and its regression test are in; it holds no state and needs no prior setup. [ask-matt](https://aihero.dev/skills-ask-matt) routes "Something's broken" here.
 
-Two neighbours matter. [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) takes the [handoff](https://www.aihero.dev/ai-coding-dictionary/handoff) when the real finding is that the code has no seam to lock the bug down — the recommendation is made after the fix is in, when there is more information. [triage](https://aihero.dev/skills-triage) sits upstream of it for bugs that arrive as raw reports from other people, and does a shallower version of the same first two phases.
+Two neighbours matter. [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) can take the [handoff](https://www.aihero.dev/ai-coding-dictionary/handoff) when the finding is that the code has no seam to lock the bug down. A changed plan requires your confirmation by default; explicit delegation can cover the decision only within the authorized task and scope. [triage](https://aihero.dev/skills-triage) sits upstream of it for bugs that arrive as raw reports from other people, and does a shallower version of the same first two phases.

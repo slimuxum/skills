@@ -2,7 +2,10 @@
 
 `codebase-design` fixes the words you use to design a module or cross-repository interface: **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**. It makes source, binary, timing, resource, concurrency, lifecycle, failure and hardware constraints part of the interface rather than implementation trivia.
 
-It is a reference, not a process. There is no loop to run, no artifact it produces, no checkpoint where it asks you a question. Every other skill that touches design borrows its vocabulary; on its own it gives you the language and stops. That is the thing to know before you invoke it, because a skill with no process and no stopping rule will improvise one if you point a [session](https://www.aihero.dev/ai-coding-dictionary/session) at it and say "go" — see the questions below.
+It is a reference, not a process. There is no design loop to run or output artifact it produces. Every other skill that touches design borrows its vocabulary; on its own it gives you the language and stops. Use a driver skill when a [session](https://www.aihero.dev/ai-coding-dictionary/session) needs to work through design decisions — see the questions below.
+
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
 
 ## When to reach for it
 
@@ -53,7 +56,7 @@ Use the mechanisms the actual build owns: a small public-header or generated-int
 
 **I pointed a session at it and it burned 100k [tokens](https://www.aihero.dev/ai-coding-dictionary/token) redesigning things I never asked about.**
 
-Known, and filed as [issue #449](https://github.com/mattpocock/skills/issues/449). The skill is model-invoked and describes itself as vocabulary, but nothing in it hard-stops an agent from treating it as a runnable process. Told to "resume in /codebase-design and drive the open decisions", an agent reached for the most action-shaped content it could find — the parallel sub-agents in `DESIGN-IT-TWICE.md` — re-explored code a previous session had already mapped, and ran a long way before asking anything. None of the guardrails a driver skill has (checkpoints, one question at a time, no auto-advance) are present here, because a reference has none. The workaround is to name a driver skill and let this one sit underneath it: `/grill-with-docs`, `/improve-codebase-architecture` or `/tdd` with `codebase-design` as the vocabulary. The issue is open.
+That failure was reported in [issue #449](https://github.com/mattpocock/skills/issues/449): a reference was treated as a driver and work spread into unrequested redesign. Use `/grill-with-docs`, `/improve-codebase-architecture` or `/tdd` to drive the work, with `codebase-design` as the vocabulary. The shared default pauses decision-affecting uncertainty, high risk, or departure from the intended work, including in parallel design workers. Explicit delegation removes that additional pause only within the task and scope you authorize; it does not authorize unrequested redesign.
 
 **Where did `design-an-interface` go? And is there an `/interface-design` skill?**
 

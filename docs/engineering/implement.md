@@ -4,6 +4,9 @@
 
 It does not silently widen the plan, writable scope, target operations, or release authority. Missing cross-repository dependencies, incompatible interfaces, unsafe target steps, or unavailable required evidence become explicit blockers. A successful run produces a reviewed change, an in-session evidence summary, and a commit on each affected repository's current branch; it never pushes.
 
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
+
 ## When to reach for it
 
 You invoke this by typing `/implement` — the agent won't reach for it on its own. It ships with `disable-model-invocation: true`, so no other skill can call it either. Wherever [ask-matt](https://aihero.dev/skills-ask-matt) or [to-tickets](https://aihero.dev/skills-to-tickets) says "then `/implement` per ticket", that is an instruction to you, not something the agent will do unprompted.
@@ -63,7 +66,7 @@ The Skill commits the reviewed slice to the current branch. Pushing and opening 
 
 **`code-review` says it cannot see my changes.**
 
-The review receives an in-session per-repository scope summary covering the selected base, committed range, index, working tree, untracked files, generated artifacts, and cross-repository edges. If the summary is incomplete, stop and repair the scope; do not persist it or commit merely to make work visible.
+The review receives an in-session per-repository scope summary covering the selected base, committed range, index, working tree, untracked files, generated artifacts, and cross-repository edges. An incomplete summary triggers the shared default: explain the gap and recommend a correction for your confirmation. Explicit delegation can cover correcting that summary within the authorized task and scope; it cannot broaden the review or write scope. Do not persist the summary or commit merely to make work visible.
 
 With a Spec, exactly Standards and Spec run concurrently in isolated sub-agents. Without a Spec, only Standards runs. This is a hard capability requirement, not an invitation for the implementing agent to add axes or review sequentially in the parent context.
 

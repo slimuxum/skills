@@ -1,10 +1,13 @@
 ## What it does
 
-`to-spec` converts settled decisions into a canonical engineering specification. It does not interview you again; it synthesizes the conversation, map, research, and codebase evidence already available. Its one checkpoint is to sketch the highest practical public verification seams and confirm them with you before writing.
+`to-spec` converts settled decisions into a canonical engineering specification. It does not repeat the design interview; it synthesizes the conversation, map, research, and codebase evidence already available. Its planned writing checkpoint is to sketch the highest practical public verification seams and confirm them with you before writing.
 
 It records the workspace baseline, per-repository revisions, logical contexts, governing sources, required behavior, constraints, change map, verification environments, acceptance evidence, risks, and delivery constraints.
 
 A specification is not restricted to User Stories. It uses state, interface, timing, resource, failure, compatibility, migration, generated-artifact, safety, security, or other requirement forms only when the problem needs them.
+
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
 
 ## When to reach for it
 

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # To Spec
 
-Convert agreed decisions into an implementation-facing engineering specification. Do **not** interview the user again; synthesize what the conversation, map, research, and codebase already establish. The one explicit checkpoint is confirmation of the proposed verification seams. Do not invent missing decisions or implement the change. If another load-bearing decision is absent, list it as open and stop before publication rather than starting a new interview.
+Convert agreed decisions into an implementation-facing engineering specification. Do **not** interview the user again; synthesize what the conversation, map, research, and codebase already establish. The original checkpoint remains confirmation of the proposed verification seams. Apply the additional risk and goal confirmation rule in its default or explicitly authorized autonomous mode. Do not invent missing decisions or implement the change. If another load-bearing decision is absent, list it as open and stop before publication rather than starting a new interview.
 
 ## Ground the specification
 
@@ -120,3 +120,11 @@ Applicable verification environments are static analysis, host, simulator, emula
 After the verification seams are confirmed and the specification is complete, publish it to the configured project tracker or configured spec location. Apply the configured `ready-for-agent` triage label; no additional triage is needed. Do not create branches, commit, push, or edit implementation.
 
 Report the canonical spec location, affected repositories and revisions, unresolved decisions, and verification that has not run.
+
+## Risk and goal confirmation
+
+**Default.** If uncertainty affects an execution decision, a high-risk item appears, or work departs from the user's agreed goal, scope, constraints, or expected outcome, stop execution and pause related delegated work. Explain the problem, evidence, and impact; recommend a response with reasons and wait for the user's explicit confirmation. Before confirmation, do not attempt fixes, retries, workarounds, alternatives, or plan changes on your own. Resume only the confirmed response.
+
+**Explicit autonomous authorization.** If the user explicitly says not to ask and to decide independently, or gives equivalent authorization, follow the skill's original workflow for decisions, iteration, and fallbacks within the task and scope they authorize. This waives only the extra questions and confirmations introduced by this rule and its applications in supporting instructions. It does not expand the agreed goal or scope, remove existing permission limits, or waive confirmations required by the original workflow. Silence, no reply, or an ordinary "continue" is not autonomous authorization. Restore the default when authorization is withdrawn or does not cover the decision.
+
+**Delegation and handoff.** Include this full rule, agreed goal and scope, the user's autonomous authorization and its scope when present, unresolved issues, recommendations, and confirmation status in worker briefs and handoffs. Workers follow the same applicable mode; under the default, they stop and report to the parent for the user's decision. On withdrawal or narrowing of authorization, notify active workers and pause affected work until they are applying the current mode and scope. A handoff or automatic-continuation instruction cannot grant autonomous authorization or bypass a confirmation that is still required.

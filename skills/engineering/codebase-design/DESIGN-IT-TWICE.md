@@ -17,13 +17,13 @@ Before spawning sub-agents, write a user-facing explanation of the problem space
 - The verification environments available: static, host, simulator, emulator, target, and HIL
 - A rough illustrative code sketch to ground the constraints — not a proposal, just a way to make the constraints concrete
 
-Show this to the user, then immediately proceed to Step 2. The user reads and thinks while the sub-agents work in parallel.
+Show this to the user, then proceed to Step 2 while they read and think when the [risk and goal confirmation rule](SKILL.md#risk-and-goal-confirmation) permits it. Under the default, pause for decision-affecting uncertainty, high risk, or departure from the agreed goal. Explicit autonomous authorization allows the original dispatch flow within its scope.
 
 ### 2. Spawn sub-agents
 
 Before proposing an interface, freeze the actual set of design constraints and its worker count `N` (`N >= 3`, including any applicable fourth or later constraint). Verify that the harness can start all `N` isolated sub-agents concurrently. If it cannot, stop with `BLOCKED`, name the missing capacity, and produce no designs. Do not reduce the selected set or generate alternatives sequentially in the parent agent.
 
-Spawn the frozen `N` sub-agents in parallel. Each must produce a **radically different** interface for the deepened module. In every brief, say: **Do not invoke `codebase-design`, Design It Twice, or any other Skill; do not spawn sub-agents. Perform this assigned design directly.**
+Spawn the frozen `N` sub-agents in parallel. Each must produce a **radically different** interface for the deepened module. Include the full risk and goal confirmation rule, agreed objective and scope, any explicit autonomous authorization with its scope, and pending confirmations in every brief; workers must not depend on implicit Skill access. Also say: **Do not invoke `codebase-design`, Design It Twice, or any other Skill; do not spawn sub-agents. Perform this assigned design directly.**
 
 Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
 

@@ -2,7 +2,7 @@
 
 A **phase** is a chunk of work inside a session — the grilling, the implementation, the QA. The definition is fuzzy on purpose: a phase ends when you think *"ok, we're done with that"*.
 
-The **phase boundary** is the gap between two phases, and it is the only place this decision belongs. Mid-phase there is no decision to make — continue, or split the work that's left into subagents. Compacting mid-phase makes the agent lose the thread.
+The **phase boundary** is the gap between two phases, and it is the place for this context-management decision. During ordinary in-scope work, continue or split the work that's left into subagents. If decision-affecting uncertainty, a high-risk item, or goal deviation appears, apply the [risk and goal confirmation rule](SKILL.md#risk-and-goal-confirmation) in its default or explicitly authorized autonomous mode. Context transitions must preserve unresolved issues, confirmation status, and any autonomous authorization with its scope; transitions cannot grant authorization or waive confirmations required by the original workflow. Compacting mid-phase makes the agent lose the thread.
 
 ## The five options
 

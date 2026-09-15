@@ -36,6 +36,10 @@ The agent needs to know when it's done. Every agent brief must have concrete, te
 
 State what is out of scope. This prevents the agent from gold-plating or making assumptions about adjacent features.
 
+### Risk and goal confirmation
+
+Include the full risk and goal confirmation rule from [SKILL.md](SKILL.md#risk-and-goal-confirmation) in every brief, together with the user's explicit autonomous authorization and its scope when present, unresolved issues, recommended responses, and confirmation status. This also applies when adapting an example below. Under the default, an AFK agent pauses for the user's decision when the rule is triggered. Within explicit autonomous authorization, it follows the original workflow, retaining existing permission limits and required confirmations. Tracker readiness does not grant that authorization.
+
 ### Workspace and evidence
 
 For work spanning a workspace, identify each repository and baseline revision, the active Logical Context, and owned interfaces. State which static, host, simulator, emulator, target, or HIL evidence is required and what each environment cannot prove. Tracker readiness does not mean the product is verified or complete.
@@ -74,6 +78,10 @@ Be specific about edge cases and error conditions.
 
 **Verification and evidence:**
 - Environment, command or procedure, expected evidence, and limitation
+
+**Execution constraints:**
+Copy the full risk and goal confirmation rule, then state any explicit autonomous
+authorization and its scope, unresolved issue, recommended response, and confirmation status.
 
 **Out of scope:**
 - Thing that should NOT be changed or addressed in this issue

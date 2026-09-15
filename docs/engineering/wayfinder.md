@@ -4,6 +4,9 @@
 
 The map is an index. Each full decision lives in exactly one ticket; the map keeps a linked gist. Workspace, Repository, and Logical Context are mapped separately.
 
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
+
 ## When to reach for it
 
 You invoke this by typing `/wayfinder` — the agent will not reach for it on its own.
@@ -19,7 +22,7 @@ Use [grill-with-docs](https://aihero.dev/skills-grill-with-docs) for a design th
 - **Grilling:** a live human interview using both grilling and domain modeling.
 - **Task:** an enabling action needed before a decision. The agent drives an AFK task directly or gives the human a precise HITL checklist, and resolves it only when the work is complete.
 
-Tickets use native child, blocker, claim, and close operations when the configured tracker supports them. A documented fallback is used only when the tracker does not support those relationships.
+Tickets use native child, blocker, claim, and close operations when the configured tracker supports them. A documented fallback is used only when the tracker does not support those relationships. If a ticket is outside the intended scope, Wayfinder explains the issue and recommends a response for your confirmation by default. Explicit delegation can cover closing, reclassifying, updating, or deleting it only within the authorized task, scope, and existing tracker permissions; it does not bring excluded work into scope.
 
 ## Common questions
 

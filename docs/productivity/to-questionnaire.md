@@ -4,6 +4,9 @@
 
 It grills you about the **send**, never the subject. Interviewing you about the topic is pointless here: not knowing the topic is why you're writing to someone else. So it asks the two things you can always answer — who this is going to, and what you need back from them — and aims every question in the document at the **gap** between the two.
 
+- **Default:** Uncertainty affecting execution decisions, high risk, or departure from your goal, scope, constraints, or expected outcome pauses work and related workers. You receive evidence, impact, recommendations, and reasons; execution and adjustments await your explicit confirmation.
+- **Explicit delegation:** “Do not ask; decide yourself” or equivalent allows the original workflow's judgment, iteration, and fallbacks within your authorized task and scope without this additional pause. Existing permission limits and required confirmations remain. Silence, no reply, or ordinary “continue” grants no exception. Workers and handoffs carry your authorization wording, scope, unresolved issues, and confirmation status. The default returns when authorization is withdrawn or does not cover the work. Withdrawal or narrowing reaches active workers, with affected work paused until their mode and scope are updated.
+
 ## When to reach for it
 
 You invoke this by typing `/to-questionnaire` — the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) won't reach for it on its own.
@@ -21,12 +24,12 @@ The common case is a [grilling](https://www.aihero.dev/ai-coding-dictionary/gril
 
 ## The send, not the subject
 
-The interview is two exchanges, and then it stops.
+The planned interview is two exchanges, followed by drafting. Decision-affecting uncertainty, high risk, or departure from the intended work triggers the shared default pause; explicit delegation removes that additional pause within its authorized task and scope.
 
 - **Who is it going to?** Their role, expertise, relationship to you, authority and its boundary. This fixes the tone, source weight and how much context the document has to carry — an outside client needs orienting, a teammate does not.
 - **What do you need back?** The concrete decisions or facts you can't resolve alone. This becomes the checklist the finished document is measured against: every item you named gets a question aimed at it.
 
-Everything after that is drafting. The file lands at a path you name, or at `to-questionnaire-<slug>.md` in the current directory when you do not name one.
+Drafting follows those answers within the agreed scope. The file lands at a path you name, or at `to-questionnaire-<slug>.md` in the current directory when you do not name one.
 
 ## The document
 
@@ -67,7 +70,7 @@ Yes, and plenty of people did before it existed — `OPEN_QUESTIONS.md` files, s
 
 ## It's working if
 
-- It asks about the recipient and about what you need back, then stops asking. A question about the subject itself is the skill off the rails.
+- It asks about the recipient and about what you need back, then drafts. Any additional pause follows the shared default and your explicit delegation; it does not reopen the subject interview.
 - Every item you named as "what I need back" is traceable to a question in the file.
 - The questions read as aimed at what the *recipient* knows, not as your own open questions copied down verbatim.
 - You could hand the file to someone who wasn't in the conversation and they would know why they got it and by when to reply.
